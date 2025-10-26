@@ -10,6 +10,7 @@
         <nav class="nav">
           <router-link to="/" class="nav-link">Nest</router-link>
           <router-link to="/map" class="nav-link">Karte</router-link>
+          <router-link to="/leaderboard" class="nav-link">Leaderboard</router-link>
           <router-link to="/game" class="nav-link">Spielen</router-link>
         </nav>
       </div>

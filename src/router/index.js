@@ -2,8 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import GameView from '../views/GameView.vue'
 import MapView from '../views/MapView.vue'
-import LogoGen from '../views/logo_generator.vue'
 import Leaderboard from '../views/Leaderboard.vue'
+import LogoGen from '../views/logo_generator.vue'
 
 const routes = [
     {
@@ -22,14 +22,14 @@ const routes = [
         component: MapView
     },
     {
-        path: '/logo_gen',
-        name: 'logo',
-        component: LogoGen
-    },    
-    {
         path: '/leaderboard',
         name: 'leaderboard',
         component: Leaderboard
+    },
+    {
+        path: '/logo_gen',
+        name: 'logo',
+        component: LogoGen
     }
 ]
 

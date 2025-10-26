@@ -17,7 +17,7 @@
     <div class="map-container">
       <canvas 
         ref="mapCanvasRef" 
-        :width="canvasWidth" 
+        :width="canvasWidth"
         :height="canvasHeight"
         @click="handleMapClick"
         @mousemove="handleMouseMove"
