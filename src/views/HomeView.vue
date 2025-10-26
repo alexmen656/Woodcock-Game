@@ -76,9 +76,14 @@
                 </div>
             </div>
             <div class="play-section">
-                <button @click="goToGame" class="btn-play">
-                    Blätter sammeln gehen!
-                </button>
+                <div class="action-buttons">
+                    <button @click="goToGame" class="btn-play">
+                        Blätter sammeln gehen!
+                    </button>
+                    <button @click="goToMap" class="btn-map">
+                        Zur Weltkarte
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -389,6 +394,10 @@ function playUpgradeSound() {
 function goToGame() {
     router.push('/game')
 }
+
+function goToMap() {
+    router.push('/map')
+}
 </script>
 
 <style scoped>
@@ -580,28 +589,54 @@ function goToGame() {
 }
 
 .play-section {
-    text-align: center;
-    padding-top: 2.5rem;
-    border-top: 1px solid var(--border);
+  text-align: center;
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-play,
+.btn-map {
+  font-size: 1.125rem;
+  font-weight: 600;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-play {
-    background: var(--accent);
-    color: white;
-    font-size: 1.25rem;
-    font-weight: 600;
-    padding: 1rem 2.5rem;
-    border: none;
-    border-radius: var(--radius);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: var(--shadow-sm);
+  background: var(--accent);
+  color: white;
+  flex: 1;
+  min-width: 250px;
 }
 
 .btn-play:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-    background: #dd7730;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  background: #dd7730;
+}
+
+.btn-map {
+  background: var(--primary);
+  color: white;
+  flex: 1;
+  min-width: 250px;
+}
+
+.btn-map:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  background: #1a202c;
 }
 
 @media (max-width: 768px) {
