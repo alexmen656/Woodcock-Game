@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head><title>Store Test</title></head>
+<body>
+<h1>LocalStorage Test</h1>
+<pre id="output"></pre>
+<script>
+const data = localStorage.getItem('woodcock_game_state');
+document.getElementById('output').textContent = data || 'No data found';
+if (data) {
+  console.log('Parsed:', JSON.parse(data));
+}
+</script>
+</body>
+</html>

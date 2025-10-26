@@ -1,44 +1,72 @@
 <template>
   <div id="app">
-    <header>
-      <h1>Game</h1>
+    <header class="app-header">
+      <div class="header-content">
+        <div class="logo">
+          <span class="logo-icon"></span>
+          <h1>Nest Builder</h1>
+        </div>
+      </div>
     </header>
-    <main>
-      <HomeView />
+    <main class="app-main">
+      <router-view />
     </main>
   </div>
 </template>
 
-<script setup>
-import HomeView from './views/HomeView.vue'
-</script>
-
 <style scoped>
-header {
-  text-align: center;
-  padding: 1rem;
-  background: linear-gradient(135deg, #ff9a56, #ff6b35);
-  color: white;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+.app-header {
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
-header h1 {
-  margin: 0;
-  font-size: 2rem;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+.header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
 }
 
-main {
+.logo {
   display: flex;
-  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo-icon {
+  font-size: 2rem;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.logo h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: -0.02em;
+}
+
+.app-main {
+  min-height: calc(100vh - 80px);
   padding: 2rem 1rem;
 }
 
 @media (max-width: 768px) {
-  header h1 {
-    font-size: 1.5rem;
+  .header-content {
+    padding: 1rem;
   }
-  main {
+  
+  .logo h1 {
+    font-size: 1.25rem;
+  }
+
+  .logo-icon {
+    font-size: 1.75rem;
+  }
+  
+  .app-main {
     padding: 1rem 0.5rem;
   }
 }

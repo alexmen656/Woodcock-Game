@@ -3,8 +3,12 @@
     <div class="game-ui">
       <div class="stats">
         <div class="stat-item">
-          <span class="label">Score:</span>
+          <span class="label">Aktuelle Punkte:</span>
           <span class="value">{{ score }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="label">Gesamt Punkte:</span>
+          <span class="value">{{ totalPoints }}</span>
         </div>
         <div class="stat-item">
           <span class="label">Highscore:</span>
@@ -15,6 +19,7 @@
           <span class="value">{{ '❤️'.repeat(lives) }}</span>
         </div>
       </div>
+    
       <div class="controls">
         <button 
           v-if="!gameStarted || gameOver" 
@@ -29,6 +34,13 @@
           class="btn-secondary"
         >
           {{ paused ? 'Resume' : 'Pause' }}
+        </button>
+        <button 
+          v-if="gameOver"
+          @click="backToNest"
+          class="btn-back"
+        >
+          🪹 Zurück zum Nest
         </button>
         <button 
           @click="toggleSound"
@@ -47,40 +59,54 @@
       @click="handleCanvasClick"
     ></canvas>
     <div v-if="gameOver" class="game-over">
-      <h2>Game Over!</h2>
-      <p class="final-score">Final Score: {{ score }}</p>
+      <h2>Runde beendet!</h2>
+      <p class="final-score">Gesammelt: {{ score }} Punkte</p>
+      <p class="total-points">Gesamt: {{ totalPoints }} Punkte</p>
       <p v-if="isNewHighscore" class="new-highscore">🎉 New Highscore! 🎉</p>
+      <p class="hint">Gehe zurück zum Nest um Upgrades zu kaufen!</p>
     </div>
     <div class="instructions">
-      <p>🖱️ Maus bewegen oder klicken | ⌨️ Pfeiltasten (← →) oder A / D | 🎮 Leertaste zum Pausieren</p>
+      <p>🐦 Sammle Blätter für dein Nest! | 🖱️ Maus bewegen | ⌨️ Pfeiltasten (← →) oder A / D | 🎮 Leertaste = Pause</p>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useGameStore } from '../store/gameStore'
+
+const router = useRouter()
+const gameStore = useGameStore()
 
 const canvasRef = ref(null)
 const canvasWidth = ref(800)
 const canvasHeight = ref(600)
 const ctx = ref(null)
+
 const gameStarted = ref(false)
 const gameOver = ref(false)
 const paused = ref(false)
 const score = ref(0)
 const lives = ref(3)
 const highscore = ref(0)
-const highscoreDate = ref(null)
 const soundEnabled = ref(true)
 const isNewHighscore = ref(false)
 
-const basket = ref({
+const totalPoints = computed(() => {
+    const val = gameStore.totalPoints.value
+    return typeof val === 'number' ? val : 0
+})
+
+const woodcock = ref({
   x: 400,
-  y: 550,
-  width: 80,
-  height: 60,
+  y: 500,
+  width: 60,
+  height: 50,
   speed: 8,
-  velocityX: 0
+  velocityX: 0,
+  wingAngle: 0,
+  wingSpeed: 0.2
 })
 
 const leafs = ref([])
@@ -128,8 +154,8 @@ function handleResize() {
   canvasWidth.value = maxWidth
   canvasHeight.value = maxHeight
   
-  basket.value.y = maxHeight - 50
-  basket.value.x = Math.min(basket.value.x, maxWidth - basket.value.width)
+  woodcock.value.y = maxHeight - 100
+  woodcock.value.x = Math.min(woodcock.value.x, maxWidth - woodcock.value.width)
 }
 
 function startGame() {
@@ -144,7 +170,7 @@ function startGame() {
   frameCount = 0
   leafSpawnTimer = 0
   
-  basket.value.x = canvasWidth.value / 2 - basket.value.width / 2
+  woodcock.value.x = canvasWidth.value / 2 - woodcock.value.width / 2
   
   gameLoop()
 }
@@ -164,7 +190,7 @@ function gameLoop() {
 }
 
 function update() {
-  updateBasket()
+  updateWoodcock()
   
   leafSpawnTimer++
   if (leafSpawnTimer >= leafSpawnInterval) {
@@ -181,20 +207,22 @@ function update() {
   }
 }
 
-function updateBasket() {
+function updateWoodcock() {
   if (keys.value.left) {
-    basket.value.velocityX = -basket.value.speed
+    woodcock.value.velocityX = -woodcock.value.speed
   } else if (keys.value.right) {
-    basket.value.velocityX = basket.value.speed
+    woodcock.value.velocityX = woodcock.value.speed
   } else {
-    basket.value.velocityX *= 0.8
+    woodcock.value.velocityX *= 0.8
   }
   
-  basket.value.x += basket.value.velocityX
+  woodcock.value.x += woodcock.value.velocityX
   
-  if (basket.value.x < 0) basket.value.x = 0
-  if (basket.value.x > canvasWidth.value - basket.value.width) {
-    basket.value.x = canvasWidth.value - basket.value.width
+  woodcock.value.wingAngle += woodcock.value.wingSpeed
+  
+  if (woodcock.value.x < 0) woodcock.value.x = 0
+  if (woodcock.value.x > canvasWidth.value - woodcock.value.width) {
+    woodcock.value.x = canvasWidth.value - woodcock.value.width
   }
 }
 
@@ -218,7 +246,6 @@ function updateLeafs() {
     leaf.y += leaf.speed
     leaf.rotation += leaf.rotationSpeed
     
-    // Remove if out of bounds (missed)
     if (leaf.y > canvasHeight.value) {
       leafs.value.splice(i, 1)
       lives.value--
@@ -232,24 +259,26 @@ function checkCollisions() {
     const leaf = leafs.value[i]
     
     if (
-      leaf.x + leaf.width > basket.value.x &&
-      leaf.x < basket.value.x + basket.value.width &&
-      leaf.y + leaf.height > basket.value.y &&
-      leaf.y < basket.value.y + basket.value.height
+      leaf.x + leaf.width > woodcock.value.x &&
+      leaf.x < woodcock.value.x + woodcock.value.width &&
+      leaf.y + leaf.height > woodcock.value.y &&
+      leaf.y < woodcock.value.y + woodcock.value.height
     ) {
-      score.value += 10
+      const points = 10
+      score.value += points
       leafs.value.splice(i, 1)
       
-      addCollisionEffect(leaf.x + leaf.width / 2, leaf.y + leaf.height / 2)
+      addCollisionEffect(leaf.x + leaf.width / 2, leaf.y + leaf.height / 2, points)
       playSound('catch')
     }
   }
 }
 
-function addCollisionEffect(x, y) {
+function addCollisionEffect(x, y, points) {
   collisionEffects.value.push({
     x,
     y,
+    points,
     scale: 1,
     alpha: 1,
     duration: 20,
@@ -285,9 +314,60 @@ function draw() {
   
   leafs.value.forEach(leaf => drawLeaf(context, leaf))
   
-  drawBasket(context)
+  drawWoodcock(context)
   
   collisionEffects.value.forEach(effect => drawCollisionEffect(context, effect))
+}
+
+function drawWoodcock(context) {
+  const w = woodcock.value
+  
+  context.save()
+  context.translate(w.x + w.width / 2, w.y + w.height / 2)
+  
+  context.fillStyle = '#8B6F47'
+  context.beginPath()
+  context.ellipse(0, 0, w.width / 2, w.height / 2, 0, 0, Math.PI * 2)
+  context.fill()
+  
+  const wingOffset = Math.sin(w.wingAngle) * 10
+  
+  context.fillStyle = '#A0826D'
+  context.beginPath()
+  context.ellipse(-w.width / 3, wingOffset, w.width / 4, w.height / 3, -0.3, 0, Math.PI * 2)
+  context.fill()
+  
+  context.beginPath()
+  context.ellipse(w.width / 3, wingOffset, w.width / 4, w.height / 3, 0.3, 0, Math.PI * 2)
+  context.fill()
+  
+  context.fillStyle = '#8B6F47'
+  context.beginPath()
+  context.arc(-w.width / 4, -w.height / 4, w.width / 3, 0, Math.PI * 2)
+  context.fill()
+  
+  context.fillStyle = '#CD853F'
+  context.beginPath()
+  context.moveTo(-w.width / 4, -w.height / 4)
+  context.lineTo(-w.width / 2 - 15, -w.height / 4 - 5)
+  context.lineTo(-w.width / 2 - 15, -w.height / 4 + 5)
+  context.closePath()
+  context.fill()
+  
+  context.fillStyle = 'black'
+  context.beginPath()
+  context.arc(-w.width / 4 + 5, -w.height / 4 - 5, 3, 0, Math.PI * 2)
+  context.fill()
+  
+  context.fillStyle = '#8B6F47'
+  context.beginPath()
+  context.moveTo(w.width / 2, 0)
+  context.lineTo(w.width / 2 + 15, -10)
+  context.lineTo(w.width / 2 + 15, 10)
+  context.closePath()
+  context.fill()
+  
+  context.restore()
 }
 
 function drawLeaf(context, leaf) {
@@ -314,35 +394,13 @@ function drawLeaf(context, leaf) {
   context.restore()
 }
 
-function drawBasket(context) {
-  const b = basket.value
-  
-  context.fillStyle = '#8B4513'
-  context.fillRect(b.x, b.y, b.width, b.height)
-  
-  context.strokeStyle = '#654321'
-  context.lineWidth = 2
-  for (let i = 0; i < b.width; i += 10) {
-    context.beginPath()
-    context.moveTo(b.x + i, b.y)
-    context.lineTo(b.x + i, b.y + b.height)
-    context.stroke()
-  }
-  
-  context.strokeStyle = '#8B4513'
-  context.lineWidth = 4
-  context.beginPath()
-  context.arc(b.x + b.width / 2, b.y, 20, Math.PI, 0)
-  context.stroke()
-}
-
 function drawCollisionEffect(context, effect) {
   context.save()
   context.globalAlpha = effect.alpha
   context.fillStyle = '#FFD700'
-  context.font = `${20 * effect.scale}px Arial`
+  context.font = `bold ${20 * effect.scale}px Arial`
   context.textAlign = 'center'
-  context.fillText('+10', effect.x, effect.y)
+  context.fillText(`+${effect.points}`, effect.x, effect.y)
   context.restore()
 }
 
@@ -382,16 +440,16 @@ function handleKeyUp(e) {
 }
 
 function handleMouseMove(e) {
-  if (!gameStarted.value || gameOver.value || paused.value) return
+  if (!gameStarted.value || gameOver.value || paused.value || showNestUpgrade.value) return
   
   const rect = canvasRef.value.getBoundingClientRect()
   const mouseX = e.clientX - rect.left
   
-  basket.value.x = mouseX - basket.value.width / 2
+  woodcock.value.x = mouseX - woodcock.value.width / 2
   
-  if (basket.value.x < 0) basket.value.x = 0
-  if (basket.value.x > canvasWidth.value - basket.value.width) {
-    basket.value.x = canvasWidth.value - basket.value.width
+  if (woodcock.value.x < 0) woodcock.value.x = 0
+  if (woodcock.value.x > canvasWidth.value - woodcock.value.width) {
+    woodcock.value.x = canvasWidth.value - woodcock.value.width
   }
 }
 
@@ -409,9 +467,10 @@ function endGame() {
   gameOver.value = true
   gameStarted.value = false
   
+  gameStore.addPoints(score.value)
+  
   if (score.value > highscore.value) {
     highscore.value = score.value
-    highscoreDate.value = new Date().toISOString()
     isNewHighscore.value = true
     saveHighscore()
     playSound('highscore')
@@ -422,6 +481,10 @@ function endGame() {
   }
 }
 
+function backToNest() {
+  router.push('/')
+}
+
 function getRandomLeafColor() {
   const colors = ['#ff6b35', '#ff9a56', '#ffa500', '#ffcc00', '#8b4513', '#a0522d']
   return colors[Math.floor(Math.random() * colors.length)]
@@ -429,14 +492,9 @@ function getRandomLeafColor() {
 
 function loadHighscore() {
   try {
-    const saved = localStorage.getItem('leafgame_highscore')
-    const savedDate = localStorage.getItem('leafgame_highscore_date')
-    if (saved) {
-      highscore.value = parseInt(saved, 10)
-    }
-    if (savedDate) {
-      highscoreDate.value = savedDate
-    }
+    const savedHighscore = localStorage.getItem('woodcock_game_highscore')
+    
+    if (savedHighscore) highscore.value = parseInt(savedHighscore, 10)
   } catch (e) {
     console.warn('Failed to load highscore:', e)
   }
@@ -444,8 +502,7 @@ function loadHighscore() {
 
 function saveHighscore() {
   try {
-    localStorage.setItem('leafgame_highscore', highscore.value.toString())
-    localStorage.setItem('leafgame_highscore_date', highscoreDate.value)
+    localStorage.setItem('woodcock_game_highscore', highscore.value.toString())
   } catch (e) {
     console.warn('Failed to save highscore:', e)
   }
@@ -478,6 +535,12 @@ function playSound(type) {
       gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2)
       oscillator.start(audioContext.currentTime)
       oscillator.stop(audioContext.currentTime + 0.2)
+    } else if (type === 'upgrade') {
+      oscillator.frequency.value = 1200
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime)
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4)
+      oscillator.start(audioContext.currentTime)
+      oscillator.stop(audioContext.currentTime + 0.4)
     } else if (type === 'highscore') {
       oscillator.frequency.value = 1000
       gainNode.gain.setValueAtTime(0.3, audioContext.currentTime)
@@ -496,9 +559,11 @@ function playSound(type) {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 1.5rem;
   max-width: 900px;
   margin: 0 auto;
+  position: relative;
+  padding: 1rem;
 }
 
 .game-ui {
@@ -506,12 +571,13 @@ function playSound(type) {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 1.25rem;
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 .stats {
@@ -524,50 +590,99 @@ function playSound(type) {
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 0.25rem;
 }
 
 .stat-item .label {
-  font-size: 0.875rem;
-  color: #666;
-  font-weight: 500;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .stat-item .value {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #ff6b35;
+  color: var(--accent);
 }
 
 .stat-item.lives .value {
   font-size: 1.25rem;
 }
 
+.stat-item.nest .value {
+  color: var(--primary);
+}
+
 .controls {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.75rem;
   flex-wrap: wrap;
 }
 
+.btn-primary,
+.btn-secondary,
+.btn-back,
+.btn-sound {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9375rem;
+}
+
 .btn-primary {
-  background: linear-gradient(135deg, #ff6b35, #ff9a56);
+  background: var(--accent);
   color: white;
+}
+
+.btn-primary:hover {
+  background: #dd7730;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-secondary {
-  background: linear-gradient(135deg, #4a90e2, #67b5ff);
+  background: var(--primary);
   color: white;
 }
 
+.btn-secondary:hover {
+  background: #1a202c;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-back {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-back:hover {
+  background: #1a202c;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
 .btn-sound {
-  background: #f0f0f0;
-  font-size: 1.25rem;
+  background: var(--bg-main);
+  font-size: 1.125rem;
   padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+}
+
+.btn-sound:hover {
+  background: var(--bg-card);
+  border-color: var(--accent);
 }
 
 canvas {
-  border: 4px solid #8B4513;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
   background: white;
   cursor: crosshair;
   display: block;
@@ -578,53 +693,80 @@ canvas {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(255, 255, 255, 0.95);
-  padding: 2rem 3rem;
-  border-radius: 16px;
-  box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+  background: rgba(255, 255, 255, 0.98);
+  padding: 2.5rem 3rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
   text-align: center;
   z-index: 10;
+  backdrop-filter: blur(8px);
 }
 
 .game-over h2 {
-  font-size: 2.5rem;
-  color: #ff6b35;
-  margin-bottom: 1rem;
+  font-size: 2rem;
+  color: var(--primary);
+  margin-bottom: 1.25rem;
+  font-weight: 700;
 }
 
-.final-score {
-  font-size: 1.5rem;
+.final-score, .total-points {
+  font-size: 1.25rem;
   font-weight: 600;
-  color: #333;
-  margin-bottom: 0.5rem;
+  color: var(--primary);
+  margin: 0.75rem 0;
+}
+
+.total-points {
+  color: var(--accent);
+  font-size: 1.5rem;
+}
+
+.hint {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  margin-top: 1.25rem;
 }
 
 .new-highscore {
-  font-size: 1.25rem;
-  color: #FFD700;
+  font-size: 1.125rem;
+  color: var(--accent);
   font-weight: 700;
   animation: pulse 1s infinite;
+  margin-top: 1rem;
 }
 
 @keyframes pulse {
   0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
+  50% { transform: scale(1.05); }
 }
 
 .instructions {
   text-align: center;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
   font-size: 0.875rem;
-  color: #666;
-  max-width: 600px;
+  color: var(--text-secondary);
+  max-width: 700px;
+  line-height: 1.6;
+}
+
+.instructions p {
+  margin: 0.25rem 0;
 }
 
 @media (max-width: 768px) {
+  .game-container {
+    padding: 0.75rem;
+  }
+
   .game-ui {
     flex-direction: column;
     align-items: stretch;
+    padding: 1rem;
+    gap: 1rem;
   }
   
   .stats {
@@ -636,17 +778,26 @@ canvas {
     justify-content: center;
   }
   
+  .game-over {
+    padding: 1.75rem 2rem;
+  }
+
   .game-over h2 {
-    font-size: 2rem;
+    font-size: 1.5rem;
   }
   
-  .final-score {
-    font-size: 1.25rem;
+  .final-score, .total-points {
+    font-size: 1.125rem;
   }
   
   .instructions {
-    font-size: 0.75rem;
-    padding: 0.75rem;
+    font-size: 0.8125rem;
+    padding: 0.875rem 1.25rem;
+  }
+
+  canvas {
+    max-width: 100%;
+    height: auto;
   }
 }
 </style>
