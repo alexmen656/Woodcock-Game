@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import GameView from '../views/GameView.vue'
 import MapView from '../views/MapView.vue'
 import LogoGen from '../views/logo_generator.vue'
+import Leaderboard from '../views/Leaderboard.vue'
 
 const routes = [
     {
@@ -24,6 +25,11 @@ const routes = [
         path: '/logo_gen',
         name: 'logo',
         component: LogoGen
+    },    
+    {
+        path: '/leaderboard',
+        name: 'leaderboard',
+        component: Leaderboard
     }
 ]
 
