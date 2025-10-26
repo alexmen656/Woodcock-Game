@@ -4,6 +4,7 @@
       <div class="header-content">
         <div class="logo">
           <span class="logo-icon"></span>
+          <img width="3.5%" src="./assets/logo.png" alt="">
           <h1>Nest Builder</h1>
         </div>
       </div>
