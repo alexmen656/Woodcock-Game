@@ -66,7 +66,7 @@
             <div class="detail-avatar">{{ selectedNest.isOwn ? '�' : '�🐦' }}</div>
             <div class="detail-info">
               <h3>{{ selectedNest.username }}</h3>
-              <span class="detail-rank">Rang #{{ selectedNest.rank }}</span>
+              <span class="detail-rank">Rank #{{ selectedNest.rank }}</span>
             </div>
           </div>
           <div class="detail-stats-grid">
@@ -226,9 +226,9 @@ const onlineUsers = computed(() => Math.floor(mockNests.value.length * 0.7))
 const trees = ref([])
 
 onMounted(async () => {
+  setupCanvas()
   await loadNests()
   trees.value = generateTrees(worldWidth.value, worldHeight.value, 50)
-  setupCanvas()
   centerOnOwnNest()
   drawMap()
   window.addEventListener('resize', handleResize)
@@ -264,6 +264,13 @@ function setupCanvas() {
   mapCtx = canvas.getContext('2d')
   
   handleResize()
+  
+  // Draw immediately after setup
+  requestAnimationFrame(() => {
+    if (mockNests.value.length > 0) {
+      drawMap()
+    }
+  })
 }
 
 function worldToScreen(worldX, worldY) {
@@ -855,12 +862,11 @@ main.app-main {
 }
 
 .nest-detail-panel {
-  position: fixed;
-  top: 50%;
-  right: 2rem;
-  transform: translateY(-50%);
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
   width: 400px;
-  max-height: 90vh;
+  max-height: calc(100% - 2rem);
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -1018,12 +1024,12 @@ main.app-main {
 }
 
 .slide-enter-from {
-  transform: translate(100%, -50%);
+  transform: translateX(100%);
   opacity: 0;
 }
 
 .slide-leave-to {
-  transform: translate(100%, -50%);
+  transform: translateX(100%);
   opacity: 0;
 }
 
@@ -1034,6 +1040,7 @@ main.app-main {
     width: auto;
     max-width: 500px;
     margin: 0 auto;
+    max-height: calc(100% - 2rem);
   }
 }
 
@@ -1067,14 +1074,14 @@ main.app-main {
   }
 
   .nest-detail-panel {
-    position: fixed;
+    position: absolute;
     top: auto;
     bottom: 0;
     right: 0;
     left: 0;
     transform: none;
     border-radius: var(--radius) var(--radius) 0 0;
-    max-height: 80vh;
+    max-height: 70%;
     width: 100%;
     padding: 1.5rem;
   }

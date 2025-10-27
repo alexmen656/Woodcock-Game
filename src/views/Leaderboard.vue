@@ -2,7 +2,7 @@
   <div class="leaderboard-view">
     <div class="leaderboard-header">
       <h1>Leaderboard</h1>
-      <p class="subtitle">Die besten Nest-Bauer der Welt</p>
+      <p class="subtitle">The best Nest-Builder in the world</p>
     </div>
     <div v-if="loading" class="loading">
       <div class="spinner"></div>
@@ -21,7 +21,7 @@
         </div>
         <div class="stat-box">
           <span class="stat-number">{{ totalGames }}</span>
-          <span class="stat-label">Totoal played Games</span>
+          <span class="stat-label">Total played Games</span>
         </div>
       </div>
 

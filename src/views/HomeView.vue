@@ -2,29 +2,31 @@
     <div class="home-view">
         <div class="nest-display">
             <h2>Your Nest</h2>
-            <canvas ref="nestCanvasRef" width="400" height="400" class="nest-canvas"></canvas>
-            <div class="nest-stats">
-                <div class="stat-card">
-                    <div class="stat-icon">🪹</div>
-                    <div class="stat-info">
-                        <span class="stat-label">Nest Level</span>
-                        <span class="stat-value">{{ nestLevel }} / 10</span>
+            <div class="nws">
+                <canvas ref="nestCanvasRef" width="400" height="400" class="nest-canvas"></canvas>
+                <div class="ns">
+                    <div class="stat-card">
+                        <div class="stat-icon">🪹</div>
+                        <div class="stat-info">
+                            <span class="stat-label">Nest Level</span>
+                            <span class="stat-value">{{ nestLevel }} / 10</span>
+                        </div>
                     </div>
-                </div>
 
-                <div class="stat-card">
-                    <div class="stat-icon">🍂</div>
-                    <div class="stat-info">
-                        <span class="stat-label">Collected Points</span>
-                        <span class="stat-value">{{ totalPoints }}</span>
+                    <div class="stat-card">
+                        <div class="stat-icon">🍂</div>
+                        <div class="stat-info">
+                            <span class="stat-label">Collected Points</span>
+                            <span class="stat-value">{{ totalPoints }}</span>
+                        </div>
                     </div>
-                </div>
 
-                <div class="stat-card">
-                    <div class="stat-icon">🥚</div>
-                    <div class="stat-info">
-                        <span class="stat-label">Eggs in Nest</span>
-                        <span class="stat-value">{{ eggs }}</span>
+                    <div class="stat-card">
+                        <div class="stat-icon">🥚</div>
+                        <div class="stat-info">
+                            <span class="stat-label">Eggs in Nest</span>
+                            <span class="stat-value">{{ eggs }}</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -426,19 +428,25 @@ function goToMap() {
 }
 
 .nest-canvas {
-    display: block;
-    margin: 0 auto 2.5rem;
     border: 1px solid var(--border);
     border-radius: var(--radius);
     box-shadow: var(--shadow-sm);
     background: #fafafa;
 }
 
-.nest-stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1.25rem;
+.nws {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    justify-content: center;
     margin-bottom: 2.5rem;
+}
+
+.ns {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 280px;
 }
 
 .stat-card {
@@ -644,9 +652,20 @@ function goToMap() {
         padding: 1rem;
     }
 
+    .nws {
+        flex-direction: column;
+        align-items: center;
+    }
+
     .nest-canvas {
         width: 100%;
         height: auto;
+        max-width: 400px;
+    }
+
+    .ns {
+        width: 100%;
+        max-width: 400px;
     }
 
     .nest-display h2 {
