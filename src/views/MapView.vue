@@ -13,17 +13,17 @@
         class="map-canvas"
       ></canvas>
       <div class="map-header-floating">
-        <h1>🌲 Woodcock Forest</h1>
+        <h1>Woodcock Forest</h1>
       </div>
       <div class="map-legend-floating">
         <div class="legend-item">
           <div class="legend-marker own"></div>
           <span>Your Nest</span>
         </div>
-        <div class="legend-item">
+       <!-- <div class="legend-item">
           <div class="legend-marker friend"></div>
           <span>Friends</span>
-        </div>
+        </div>-->
         <div class="legend-item">
           <div class="legend-marker other"></div>
           <span>Other Players</span>
@@ -63,7 +63,9 @@
         <button @click="closeDetail" class="btn-close">✕</button>
         <div class="detail-content">
           <div class="detail-header">
-            <div class="detail-avatar">{{ selectedNest.isOwn ? '�' : '�🐦' }}</div>
+                <div class="player-avatar">
+                <img src="../assets/logo.png" alt="Player" class="avatar-logo" />
+              </div>
             <div class="detail-info">
               <h3>{{ selectedNest.username }}</h3>
               <span class="detail-rank">Rank #{{ selectedNest.rank }}</span>
@@ -95,19 +97,19 @@
               <span class="detail-value">{{ selectedNest.gamesPlayed || 0 }}</span>
             </div>
           </div>
-          <canvas 
+         <!--<canvas 
             ref="nestPreviewRef" 
             width="300"
             height="300" 
             class="nest-preview"
-          ></canvas>
-          <div class="detail-actions">
+          ></canvas>-->
+          <div v-if="selectedNest.isOwn" class="detail-actions">
             <button class="btn-action btn-visit" @click="visitNest">
-              {{ selectedNest.isOwn ? '🏠 Go to Nest' : '👁️ Visit Nest' }}
+              {{ selectedNest.isOwn ? 'Go to Nest' : 'Visit Nest' }}
             </button>
-            <button v-if="!selectedNest.isOwn" class="btn-action btn-friend" @click="addFriend">
+            <!--<button v-if="!selectedNest.isOwn" class="btn-action btn-friend" @click="addFriend">
               {{ selectedNest.isFriend ? '✓ Freund' : '+ Freund hinzufügen' }}
-            </button>
+            </button>-->
           </div>
         </div>
       </div>
@@ -743,12 +745,12 @@ main.app-main {
 
 .map-header-floating {
   position: absolute;
-  top: 1.5rem;
+  top: .75rem;
   left: 50%;
   transform: translateX(-50%);
   z-index: 100;
   background: rgba(255, 255, 255, 0.95);
-  padding: 0.75rem 2rem;
+  padding: 0.375rem 1rem;
   border-radius: var(--radius);
   box-shadow: var(--shadow-lg);
   border: 1px solid var(--border);
@@ -927,7 +929,7 @@ main.app-main {
 .detail-info h3 {
   font-size: 1.5rem;
   color: var(--primary);
-  margin: 0 0 0.25rem 0;
+  margin: 0;
   font-weight: 700;
 }
 
@@ -944,7 +946,7 @@ main.app-main {
 .detail-stats-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  gap: .75rem;
 }
 
 .detail-stat {
@@ -1099,4 +1101,22 @@ main.app-main {
   }
 }
 
+.player-avatar {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, var(--accent), #dd7730);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.avatar-logo {
+  width: 75%;
+  height: auto;
+  object-fit: cover;
+}
 </style>
