@@ -3,7 +3,7 @@
     <div class="map-header">
       <h1>🌲 Woodcock Forest</h1>
       <p class="map-subtitle">Explore Nests of Other Players</p>
-      <div class="map-stats">
+      <!--<div class="map-stats">
         <div class="map-stat">
           <span class="stat-icon">🪹</span>
           <span class="stat-text">{{ totalNests }} Nests</span>
@@ -12,7 +12,7 @@
           <span class="stat-icon">🐦</span>
           <span class="stat-text">{{ onlineUsers }} Online</span>
         </div>
-      </div>
+      </div>-->
     </div>
     <div class="map-container">
       <canvas 

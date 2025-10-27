@@ -1,7 +1,7 @@
 <template>
   <div class="leaderboard-view">
     <div class="leaderboard-header">
-      <h1>🏆 Leaderboard</h1>
+      <h1>Leaderboard</h1>
       <p class="subtitle">Die besten Nest-Bauer der Welt</p>
     </div>
     <div v-if="loading" class="loading">
@@ -198,7 +198,7 @@ function formatNumber(num) {
 .leaderboard-header h1 {
   font-size: 2.5rem;
   color: var(--primary);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0;
   font-weight: 700;
 }
 

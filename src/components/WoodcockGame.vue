@@ -3,11 +3,11 @@
     <div class="game-ui">
       <div class="stats">
         <div class="stat-item">
-          <span class="label">Aktuelle Punkte:</span>
+          <span class="label">Current Points:</span>
           <span class="value">{{ score }}</span>
         </div>
         <div class="stat-item">
-          <span class="label">Gesamt Punkte:</span>
+          <span class="label">Total Points:</span>
           <span class="value">{{ totalPoints }}</span>
         </div>
         <div class="stat-item">
@@ -59,14 +59,14 @@
       @click="handleCanvasClick"
     ></canvas>
     <div v-if="gameOver" class="game-over">
-      <h2>Runde beendet!</h2>
-      <p class="final-score">Gesammelt: {{ score }} Punkte</p>
-      <p class="total-points">Gesamt: {{ totalPoints }} Punkte</p>
+      <h2>Round Over!</h2>
+      <p class="final-score">Collected: {{ score }} Points</p>
+      <p class="total-points">Total: {{ totalPoints }} Points</p>
       <p v-if="isNewHighscore" class="new-highscore">🎉 New Highscore! 🎉</p>
-      <p class="hint">Gehe zurück zum Nest um Upgrades zu kaufen!</p>
+      <p class="hint">Go back to the nest to buy upgrades!</p>
     </div>
     <div class="instructions">
-      <p>🐦 Sammle Blätter für dein Nest! | 🖱️ Maus bewegen | ⌨️ Pfeiltasten (← →) oder A / D | 🎮 Leertaste = Pause</p>
+      <p>🐦 Collect leaves for your nest! | 🖱️ Move mouse | ⌨️ Arrow keys (← →) or A / D | 🎮 Space = Pause</p>
     </div>
   </div>
 </template>
