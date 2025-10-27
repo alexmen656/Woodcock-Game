@@ -6,18 +6,18 @@
     </div>
     <div v-if="loading" class="loading">
       <div class="spinner"></div>
-      <p>Lade Leaderboard...</p>
+      <p>Loading Leaderboard...</p>
     </div>
     <div v-else-if="error" class="error-message">
       <span class="error-icon">⚠️</span>
       <p>{{ error }}</p>
-      <button @click="fetchLeaderboard" class="btn-retry">Erneut versuchen</button>
+      <button @click="fetchLeaderboard" class="btn-retry">Try Again</button>
     </div>
     <div v-else class="leaderboard-container">
       <div class="stats-overview">
         <div class="stat-box">
           <span class="stat-number">{{ totalPlayers }}</span>
-          <span class="stat-label">Spieler</span>
+          <span class="stat-label">Players</span>
         </div>
         <div class="stat-box">
           <span class="stat-number">{{ onlinePlayers }}</span>
@@ -25,16 +25,16 @@
         </div>
         <div class="stat-box">
           <span class="stat-number">{{ totalGames }}</span>
-          <span class="stat-label">Spiele</span>
+          <span class="stat-label">Games</span>
         </div>
       </div>
 
       <div class="leaderboard-table">
         <div class="table-header">
-          <div class="col-rank">Rang</div>
-          <div class="col-player">Spieler</div>
+          <div class="col-rank">Rank</div>
+          <div class="col-player">Players</div>
           <div class="col-stats">Stats</div>
-          <div class="col-points">Punkte</div>
+          <div class="col-points">Points</div>
         </div>
         <div 
           v-for="player in leaderboard" 
@@ -62,7 +62,7 @@
                   <span v-if="player.is_online" class="online-dot" title="Online"></span>
                 </div>
                 <div class="player-meta">
-                  {{ player.games_played }} Spiele gespielt
+                  {{ player.games_played }} Games Played
                 </div>
               </div>
             </div>
@@ -83,7 +83,7 @@
           <div class="col-points">
             <div class="points-display">
               <span class="points-value">{{ formatNumber(player.total_points) }}</span>
-              <span class="points-label">Punkte</span>
+              <span class="points-label">Points</span>
             </div>
             <div class="highscore-badge" v-if="player.highscore">
               Highscore: {{ player.highscore }}
@@ -97,17 +97,17 @@
           :disabled="currentPage === 1"
           class="btn-page"
         >
-          ← Zurück
+          ← Back
         </button>
         <span class="page-info">
-          Seite {{ currentPage }} von {{ totalPages }}
+          Page {{ currentPage }} of {{ totalPages }}
         </span>
         <button 
           @click="nextPage" 
           :disabled="currentPage === totalPages"
           class="btn-page"
         >
-          Weiter →
+          Next →
         </button>
       </div>
     </div>
@@ -278,7 +278,6 @@ function formatNumber(num) {
   font-size: 2.5rem;
   font-weight: 700;
   color: var(--accent);
-  margin-bottom: 0.5rem;
 }
 
 .stat-label {

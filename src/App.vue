@@ -4,14 +4,14 @@
       <div class="header-content">
         <div class="logo">
           <span class="logo-icon"></span>
-          <img width="3.5%" src="./assets/logo.png" alt="">
+          <img width="7.5%" src="./assets/logo.png" alt="">
           <h1>Nest Builder</h1>
         </div>
         <nav class="nav">
           <router-link to="/" class="nav-link">Nest</router-link>
-          <router-link to="/map" class="nav-link">Karte</router-link>
+          <router-link to="/map" class="nav-link">Map</router-link>
           <router-link to="/leaderboard" class="nav-link">Leaderboard</router-link>
-          <router-link to="/game" class="nav-link">Spielen</router-link>
+          <router-link to="/game" class="nav-link">Play</router-link>
         </nav>
       </div>
     </header>
@@ -34,7 +34,7 @@
 .header-content {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 1rem 2rem;
+  padding: .5rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -65,7 +65,7 @@
 }
 
 .nav-link {
-  padding: 0.625rem 1.25rem;
+  padding: 0.5rem 1rem;
   border-radius: 8px;
   font-weight: 600;
   font-size: 0.9375rem;
@@ -89,7 +89,7 @@
 
 .app-main {
   min-height: calc(100vh - 80px);
-  padding: 2rem 1rem;
+  padding: 1.5rem 0.75rem;
 }
 
 @media (max-width: 768px) {

@@ -1,7 +1,7 @@
 <template>
     <div class="home-view">
         <div class="nest-display">
-            <h2>🪹 Dein Nest</h2>
+            <h2>🪹 Your Nest</h2>
             <canvas ref="nestCanvasRef" width="400" height="400" class="nest-canvas"></canvas>
             <div class="nest-stats">
                 <div class="stat-card">
@@ -15,7 +15,7 @@
                 <div class="stat-card">
                     <div class="stat-icon">🍂</div>
                     <div class="stat-info">
-                        <span class="stat-label">Gesammelte Punkte</span>
+                        <span class="stat-label">Collected Points</span>
                         <span class="stat-value">{{ totalPoints }}</span>
                     </div>
                 </div>
@@ -23,7 +23,7 @@
                 <div class="stat-card">
                     <div class="stat-icon">🥚</div>
                     <div class="stat-info">
-                        <span class="stat-label">Eier im Nest</span>
+                        <span class="stat-label">Eggs in Nest</span>
                         <span class="stat-value">{{ eggs }}</span>
                     </div>
                 </div>
@@ -33,12 +33,12 @@
                 <div class="upgrade-grid">
                     <div class="upgrade-card" :class="{ locked: totalPoints < nestUpgradeCost }">
                         <div class="upgrade-header">
-                            <h4>🪹 Nest erweitern</h4>
+                            <h4>🪹 Expand Nest</h4>
                             <span class="upgrade-level">Level {{ nestLevel }}/10</span>
                         </div>
-                        <p class="upgrade-desc">Vergrößere dein Nest und füge mehr Zweige hinzu</p>
+                        <p class="upgrade-desc">Expand your nest and add more branches</p>
                         <div class="upgrade-footer">
-                            <span class="upgrade-cost">{{ nestUpgradeCost }} Punkte</span>
+                            <span class="upgrade-cost">{{ nestUpgradeCost }} Points</span>
                             <button @click="upgradeNest" :disabled="totalPoints < nestUpgradeCost || nestLevel >= 10"
                                 class="btn-upgrade">
                                 {{ nestLevel >= 10 ? 'Max Level' : 'Upgrade' }}
@@ -47,29 +47,29 @@
                     </div>
                     <div class="upgrade-card" :class="{ locked: totalPoints < eggUpgradeCost }">
                         <div class="upgrade-header">
-                            <h4>🥚 Ei hinzufügen</h4>
-                            <span class="upgrade-level">{{ eggs }}/5 Eier</span>
+                            <h4>🥚 Add Egg</h4>
+                            <span class="upgrade-level">{{ eggs }}/5 Eggs</span>
                         </div>
-                        <p class="upgrade-desc">Füge ein weiteres Ei zu deinem Nest hinzu</p>
+                        <p class="upgrade-desc">Add another egg to your nest</p>
                         <div class="upgrade-footer">
-                            <span class="upgrade-cost">{{ eggUpgradeCost }} Punkte</span>
+                            <span class="upgrade-cost">{{ eggUpgradeCost }} Points</span>
                             <button @click="upgradeEgg" :disabled="totalPoints < eggUpgradeCost || eggs >= 5"
                                 class="btn-upgrade">
-                                {{ eggs >= 5 ? 'Max Eier' : 'Hinzufügen' }}
+                                {{ eggs >= 5 ? 'Max Eggs' : 'Add' }}
                             </button>
                         </div>
                     </div>
                     <div class="upgrade-card" :class="{ locked: totalPoints < decorationUpgradeCost }">
                         <div class="upgrade-header">
-                            <h4>✨ Dekoration</h4>
-                            <span class="upgrade-level">{{ decorations }}/8 Deko</span>
+                            <h4>✨ Decorations</h4>
+                            <span class="upgrade-level">{{ decorations }}/8 Decorations</span>
                         </div>
-                        <p class="upgrade-desc">Verziere dein Nest mit Blumen und Federn</p>
+                        <p class="upgrade-desc">Decorate your nest with flowers and feathers</p>
                         <div class="upgrade-footer">
-                            <span class="upgrade-cost">{{ decorationUpgradeCost }} Punkte</span>
+                            <span class="upgrade-cost">{{ decorationUpgradeCost }} Points</span>
                             <button @click="upgradeDecoration"
                                 :disabled="totalPoints < decorationUpgradeCost || decorations >= 8" class="btn-upgrade">
-                                {{ decorations >= 8 ? 'Max Deko' : 'Hinzufügen' }}
+                                {{ decorations >= 8 ? 'Max Decorations' : 'Add' }}
                             </button>
                         </div>
                     </div>
@@ -78,10 +78,10 @@
             <div class="play-section">
                 <div class="action-buttons">
                     <button @click="goToGame" class="btn-play">
-                        Blätter sammeln gehen!
+                        Go Collect Leaves!
                     </button>
                     <button @click="goToMap" class="btn-map">
-                        Zur Weltkarte
+                        To World Map
                     </button>
                 </div>
             </div>
@@ -420,7 +420,7 @@ function goToMap() {
     text-align: center;
     font-size: 1.875rem;
     color: var(--primary);
-    margin-bottom: 2.5rem;
+    margin-bottom: 1.75rem;
     font-weight: 700;
     letter-spacing: -0.02em;
 }
