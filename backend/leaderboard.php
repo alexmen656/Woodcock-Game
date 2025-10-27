@@ -176,6 +176,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $result = mysqli_stmt_get_result($stmt);
         $updatedPlayer = mysqli_fetch_assoc($result);
         
+         $updatedPlayer['user_id'] = $userId;
+        
         echo json_encode([
             'success' => true,
             'message' => 'Leaderboard updated successfully',

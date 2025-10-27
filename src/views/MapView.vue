@@ -372,22 +372,7 @@ function drawMap() {
     }
   })
   
-  drawMiniInfo(ctx)
-  
   ctx.restore()
-}
-
-function drawMiniInfo(ctx) {
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'
-  ctx.fillRect(10, 10, 180, 60)
-  ctx.strokeStyle = 'var(--border)'
-  ctx.lineWidth = 1
-  ctx.strokeRect(10, 10, 180, 60)
-  
-  ctx.fillStyle = 'var(--primary)'
-  ctx.font = 'bold 12px system-ui'
-  ctx.fillText(`Zoom: ${(camera.value.zoom * 100).toFixed(0)}%`, 20, 30)
-  ctx.fillText(`Pos: ${Math.round(camera.value.x)}, ${Math.round(camera.value.y)}`, 20, 50)
 }
 
 function drawTree(ctx, x, y, size = 1) {

@@ -20,12 +20,8 @@
           <span class="stat-label">Players</span>
         </div>
         <div class="stat-box">
-          <span class="stat-number">{{ onlinePlayers }}</span>
-          <span class="stat-label">Online</span>
-        </div>
-        <div class="stat-box">
           <span class="stat-number">{{ totalGames }}</span>
-          <span class="stat-label">Games</span>
+          <span class="stat-label">Totoal played Games</span>
         </div>
       </div>
 
@@ -41,8 +37,7 @@
           :key="player.id"
           class="table-row"
           :class="{ 
-            'top-three': player.rank <= 3,
-            'is-online': player.is_online
+            'top-three': player.rank <= 3
           }"
         >
           <div class="col-rank">
@@ -55,11 +50,12 @@
           </div>
           <div class="col-player">
             <div class="player-info">
-              <div class="player-avatar">🐦</div>
+              <div class="player-avatar">
+                <img src="../assets/logo.png" alt="Player" class="avatar-logo" />
+              </div>
               <div class="player-details">
                 <div class="player-name">
                   {{ player.username }}
-                  <span v-if="player.is_online" class="online-dot" title="Online"></span>
                 </div>
                 <div class="player-meta">
                   {{ player.games_played }} Games Played
@@ -124,10 +120,6 @@ const error = ref(null)
 const totalPlayers = ref(0)
 const currentPage = ref(1)
 const itemsPerPage = ref(20)
-
-const onlinePlayers = computed(() => {
-  return leaderboard.value.filter(p => p.is_online).length
-})
 
 const totalGames = computed(() => {
   return leaderboard.value.reduce((sum, p) => sum + (p.games_played || 0), 0)
@@ -382,6 +374,13 @@ function formatNumber(num) {
   justify-content: center;
   font-size: 1.5rem;
   box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.avatar-logo {
+  width: 75%;
+  height: auto;
+  object-fit: cover;
 }
 
 .player-details {

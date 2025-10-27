@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS wg_users (
 
 CREATE TABLE IF NOT EXISTS wg_leaderboard (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
+    user_id INT NOT NULL UNIQUE,
     username VARCHAR(50) NOT NULL,
     total_points INT DEFAULT 0,
     nest_level INT DEFAULT 0,

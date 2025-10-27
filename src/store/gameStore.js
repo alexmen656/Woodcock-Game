@@ -160,6 +160,7 @@ export function useGameStore() {
       if (nestLevel.value < 10) {
         nestLevel.value++
         saveState()
+        await syncToBackend()
       }
     },
     
@@ -167,6 +168,7 @@ export function useGameStore() {
       if (eggs.value < 5) {
         eggs.value++
         saveState()
+        await syncToBackend()
       }
     },
     
@@ -174,6 +176,7 @@ export function useGameStore() {
       if (decorations.value < 8) {
         decorations.value++
         saveState()
+        await syncToBackend()
       }
     },
 
@@ -181,6 +184,7 @@ export function useGameStore() {
       if (score > highscore.value) {
         highscore.value = score
         saveState()
+        await syncToBackend()
         return true
       }
       return false
