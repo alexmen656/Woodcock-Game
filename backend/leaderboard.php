@@ -125,7 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         if (empty($username)) {
             throw new Exception('Username is required');
         }
-        
+
         $userQuery = "INSERT INTO wg_users (username) VALUES (?)
                       ON DUPLICATE KEY UPDATE last_login = CURRENT_TIMESTAMP, is_online = TRUE";
         $stmt = mysqli_prepare($con, $userQuery);
@@ -143,14 +143,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $leaderboardQuery = "
             INSERT INTO wg_leaderboard (
                 user_id, username, total_points, nest_level, eggs, decorations, highscore, games_played
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, 1)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, 0)
             ON DUPLICATE KEY UPDATE
+                username = VALUES(username),
                 total_points = VALUES(total_points),
                 nest_level = VALUES(nest_level),
                 eggs = VALUES(eggs),
                 decorations = VALUES(decorations),
                 highscore = GREATEST(highscore, VALUES(highscore)),
-                games_played = games_played + 1,
                 last_updated = CURRENT_TIMESTAMP
         ";
         
@@ -165,11 +165,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 l.*,
                 (SELECT COUNT(*) + 1 FROM wg_leaderboard WHERE total_points > l.total_points) as `rank`
             FROM wg_leaderboard l
-            WHERE l.username = ?
+            WHERE l.user_id = ?
         ";
         
         $stmt = mysqli_prepare($con, $getQuery);
-        mysqli_stmt_bind_param($stmt, 's', $username);
+        mysqli_stmt_bind_param($stmt, 'i', $userId);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
         $updatedPlayer = mysqli_fetch_assoc($result);
@@ -185,6 +185,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         echo json_encode([
             'error' => true,
             'message' => 'Failed to update leaderboard: ' . $e->getMessage()
+        ]);
+    }
+    exit();
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] == 'rename_user') {
+    try {
+        $userId = isset($_POST['user_id']) ? intval($_POST['user_id']) : 0;
+        $oldUsername = isset($_POST['old_username']) ? mysqli_real_escape_string($con, $_POST['old_username']) : '';
+        $newUsername = isset($_POST['new_username']) ? mysqli_real_escape_string($con, $_POST['new_username']) : '';
+        
+        if (empty($newUsername)) {
+            throw new Exception('New username is required');
+        }
+        
+        $checkQuery = "SELECT id FROM wg_users WHERE username = ? AND id != ?";
+        $stmt = mysqli_prepare($con, $checkQuery);
+        mysqli_stmt_bind_param($stmt, 'si', $newUsername, $userId);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        
+        if (mysqli_num_rows($result) > 0) {
+            throw new Exception('Username already taken');
+        }
+        
+        $updateUserQuery = "UPDATE wg_users SET username = ?, last_login = CURRENT_TIMESTAMP WHERE id = ?";
+        $stmt = mysqli_prepare($con, $updateUserQuery);
+        mysqli_stmt_bind_param($stmt, 'si', $newUsername, $userId);
+        mysqli_stmt_execute($stmt);
+        
+        $updateLeaderboardQuery = "UPDATE wg_leaderboard SET username = ?, last_updated = CURRENT_TIMESTAMP WHERE user_id = ?";
+        $stmt = mysqli_prepare($con, $updateLeaderboardQuery);
+        mysqli_stmt_bind_param($stmt, 'si', $newUsername, $userId);
+        mysqli_stmt_execute($stmt);
+        
+        echo json_encode([
+            'success' => true,
+            'message' => 'Username updated successfully'
+        ]);
+        
+    } catch(Exception $e) {
+        http_response_code(500);
+        echo json_encode([
+            'error' => true,
+            'message' => $e->getMessage()
         ]);
     }
     exit();
@@ -241,8 +286,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET["action"]) && $_GET["action"] == "map_players") {
     try {
-        $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 20;
-        
         $query = "
             SELECT 
                 l.username,
@@ -254,20 +297,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET["action"]) && $_GET["act
                 (SELECT COUNT(*) + 1 FROM wg_leaderboard WHERE total_points > l.total_points) as `rank`
             FROM wg_leaderboard l
             JOIN wg_users u ON l.user_id = u.id
-            ORDER BY RAND()
-            LIMIT ?
+            ORDER BY l.total_points DESC
         ";
         
-        $stmt = mysqli_prepare($con, $query);
-        mysqli_stmt_bind_param($stmt, 'i', $limit);
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
+        $result = mysqli_query($con, $query);
         
         $players = [];
         while ($row = mysqli_fetch_assoc($result)) {
+            // Generate random position for each player on map
             $row['x'] = rand(150, 1050);
             $row['y'] = rand(150, 650);
-            $row['isFriend'] = (bool)rand(0, 1);
             $players[] = $row;
         }
         

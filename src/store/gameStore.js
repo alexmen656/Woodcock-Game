@@ -6,8 +6,8 @@ const nestLevel = ref(0)
 const eggs = ref(0)
 const decorations = ref(0)
 const highscore = ref(0)
+const userId = ref(null)
 
-// Generate username only once and save to localStorage
 function getOrCreateUsername() {
   try {
     const saved = localStorage.getItem('woodcock_game_state')
@@ -20,7 +20,7 @@ function getOrCreateUsername() {
   } catch (e) {
     console.warn('Failed to load username:', e)
   }
-  // Generate new username only if none exists
+
   return 'Guest_' + Math.floor(Math.random() * 10000)
 }
 
@@ -36,7 +36,7 @@ function loadState() {
       eggs.value = state.eggs || 0
       decorations.value = state.decorations || 0
       highscore.value = state.highscore || 0
-      // Username already loaded in getOrCreateUsername()
+      userId.value = state.userId || null
     }
   } catch (e) {
     console.warn('Failed to load state:', e)
@@ -51,7 +51,8 @@ function saveState() {
       eggs: eggs.value,
       decorations: decorations.value,
       highscore: highscore.value,
-      username: username.value
+      username: username.value,
+      userId: userId.value
     }
     localStorage.setItem('woodcock_game_state', JSON.stringify(state))
   } catch (e) {
@@ -61,7 +62,7 @@ function saveState() {
 
 async function syncToBackend() {
   try {
-    await LeaderboardAPI.updateLeaderboard({
+    const response = await LeaderboardAPI.updateLeaderboard({
       username: username.value,
       totalPoints: totalPoints.value,
       nestLevel: nestLevel.value,
@@ -69,16 +70,26 @@ async function syncToBackend() {
       decorations: decorations.value,
       highscore: highscore.value
     })
+    
+    if (response.success && response.data && response.data.user_id) {
+      userId.value = response.data.user_id
+      saveState()
+    }
+    
     console.log('Synced to backend successfully')
   } catch (e) {
     console.warn('Failed to sync to backend:', e)
   }
 }
 
-// Initialize user in backend
 async function initializeUser() {
+  if (userId.value) {
+    console.log('User already initialized, skipping')
+    return
+  }
+  
   try {
-    await LeaderboardAPI.updateLeaderboard({
+    const response = await LeaderboardAPI.updateLeaderboard({
       username: username.value,
       totalPoints: totalPoints.value,
       nestLevel: nestLevel.value,
@@ -86,6 +97,12 @@ async function initializeUser() {
       decorations: decorations.value,
       highscore: highscore.value
     })
+    
+    if (response.success && response.data && response.data.user_id) {
+      userId.value = response.data.user_id
+      saveState()
+    }
+    
     console.log('User initialized in backend')
   } catch (e) {
     console.warn('Failed to initialize user:', e)
@@ -93,7 +110,6 @@ async function initializeUser() {
 }
 
 loadState()
-// Initialize user in backend on startup
 initializeUser()
 
 export function useGameStore() {
@@ -106,9 +122,17 @@ export function useGameStore() {
     username,
     
     async setUsername(newUsername) {
+      const oldUsername = username.value
       username.value = newUsername
       saveState()
-      await syncToBackend()
+      
+      try {
+        await LeaderboardAPI.renameUser(userId.value, oldUsername, newUsername)
+        console.log('Username updated successfully')
+      } catch (e) {
+        console.warn('Failed to update username:', e)
+        await syncToBackend()
+      }
     },
     
     async addPoints(points) {
@@ -121,7 +145,6 @@ export function useGameStore() {
       if (totalPoints.value >= points) {
         totalPoints.value -= points
         saveState()
-        syncToBackend()
         return true
       }
       return false
@@ -131,7 +154,6 @@ export function useGameStore() {
       if (nestLevel.value < 10) {
         nestLevel.value++
         saveState()
-        await syncToBackend()
       }
     },
     
@@ -139,7 +161,6 @@ export function useGameStore() {
       if (eggs.value < 5) {
         eggs.value++
         saveState()
-        await syncToBackend()
       }
     },
     
@@ -147,7 +168,6 @@ export function useGameStore() {
       if (decorations.value < 8) {
         decorations.value++
         saveState()
-        await syncToBackend()
       }
     },
 
@@ -155,7 +175,6 @@ export function useGameStore() {
       if (score > highscore.value) {
         highscore.value = score
         saveState()
-        await syncToBackend()
         return true
       }
       return false
@@ -181,8 +200,6 @@ export function useGameStore() {
       decorations.value = 0
       highscore.value = 0
       saveState()
-      syncToBackend()
     }
   }
 }
-

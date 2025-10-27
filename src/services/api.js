@@ -87,6 +87,23 @@ export const LeaderboardAPI = {
     }
   },
 
+  async renameUser(userId, oldUsername, newUsername) {
+    try {
+      const formData = createFormData({
+        action: 'rename_user',
+        user_id: userId,
+        old_username: oldUsername,
+        new_username: newUsername
+      })
+
+      const response = await apiClient.post('', formData)
+      return response.data
+    } catch (error) {
+      console.error('Failed to rename user:', error)
+      throw error
+    }
+  },
+
   async getMapPlayers(limit = 20) {
     try {
       const response = await apiClient.get('', {

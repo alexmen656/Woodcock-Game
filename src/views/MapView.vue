@@ -137,6 +137,7 @@
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useGameStore } from '../store/gameStore'
+import axios from 'axios'
 
 const router = useRouter()
 const gameStore = useGameStore()
@@ -171,132 +172,79 @@ const isFullscreen = ref(false)
 const worldWidth = computed(() => Math.max(3000, mockNests.value.length * 200))
 const worldHeight = computed(() => Math.max(2000, mockNests.value.length * 150))
 
-const mockNests = ref([
-  {
-    id: 'own',
-    username: 'Du',
-    x: 1500,
-    y: 1000,
-    nestLevel: gameStore.nestLevel.value,
-    eggs: gameStore.eggs.value,
-    decorations: gameStore.decorations.value,
-    totalPoints: gameStore.totalPoints.value,
-    isOwn: true,
-    isFriend: false,
-    rank: 1
-  },
-  {
-    id: '1',
-    username: 'WaldMeister',
-    x: 850,
-    y: 650,
-    nestLevel: 7,
-    eggs: 4,
-    decorations: 6,
-    totalPoints: 2100,
-    isOwn: false,
-    isFriend: true,
-    rank: 2
-  },
-  {
-    id: '2',
-    username: 'BaumFreund',
-    x: 2100,
-    y: 580,
-    nestLevel: 5,
-    eggs: 3,
-    decorations: 4,
-    totalPoints: 1500,
-    isOwn: false,
-    isFriend: true,
-    rank: 5
-  },
-  {
-    id: '3',
-    username: 'NestBauer',
-    x: 620,
-    y: 1280,
-    nestLevel: 8,
-    eggs: 5,
-    decorations: 7,
-    totalPoints: 2800,
-    isOwn: false,
-    isFriend: false,
-    rank: 3
-  },
-  {
-    id: '4',
-    username: 'Vogel123',
-    x: 2450,
-    y: 920,
-    nestLevel: 4,
-    eggs: 2,
-    decorations: 3,
-    totalPoints: 1200,
-    isOwn: false,
-    isFriend: false,
-    rank: 8
-  },
-  {
-    id: '5',
-    username: 'FeatherKing',
-    x: 1180,
-    y: 1580,
-    nestLevel: 9,
-    eggs: 5,
-    decorations: 8,
-    totalPoints: 3200,
-    isOwn: false,
-    isFriend: false,
-    rank: 1
-  },
-  {
-    id: '6',
-    username: 'TreeHugger',
-    x: 380,
-    y: 480,
-    nestLevel: 3,
-    eggs: 1,
-    decorations: 2,
-    totalPoints: 800,
-    isOwn: false,
-    isFriend: false,
-    rank: 12
-  },
-  {
-    id: '7',
-    username: 'SkyFlyer',
-    x: 2800,
-    y: 1350,
-    nestLevel: 6,
-    eggs: 3,
-    decorations: 5,
-    totalPoints: 1800,
-    isOwn: false,
-    isFriend: false,
-    rank: 6
-  },
-  {
-    id: '8',
-    username: 'ForestGuardian',
-    x: 1850,
-    y: 350,
-    nestLevel: 7,
-    eggs: 4,
-    decorations: 6,
-    totalPoints: 2200,
-    isOwn: false,
-    isFriend: true,
-    rank: 4
-  }
-])
+const mockNests = ref([])
 
-const trees = ref(generateTrees(worldWidth.value, worldHeight.value, 50))
+// Load nests from backend
+async function loadNests() {
+  try {
+    const response = await axios.get('https://alex.polan.sk/woodcock-game/api/map.php', {
+      params: {
+        action: 'getNests'
+      }
+    })
+    
+    if (response.data.success && response.data.data) {
+      // Add own nest
+      const ownNest = {
+        id: 'own',
+        owner: gameStore.username.value,
+        username: gameStore.username.value,
+        x: 1500,
+        y: 1000,
+        nestLevel: gameStore.nestLevel.value,
+        eggs: gameStore.eggs.value,
+        decorations: gameStore.decorations.value,
+        totalPoints: gameStore.totalPoints.value,
+        isOwn: true,
+        isFriend: false,
+        rank: 1
+      }
+      
+      // Map backend data to frontend format
+      const nests = response.data.data.map(nest => ({
+        id: nest.id.toString(),
+        username: nest.owner,
+        x: nest.x,
+        y: nest.y,
+        nestLevel: nest.nestLevel,
+        eggs: nest.eggs,
+        decorations: nest.decorations,
+        totalPoints: nest.totalPoints,
+        rank: nest.rank,
+        isOwn: nest.owner === gameStore.username.value,
+        isFriend: false
+      }))
+      
+      mockNests.value = [ownNest, ...nests.filter(n => n.username !== gameStore.username.value)]
+      console.log('Loaded nests from backend:', mockNests.value.length)
+    }
+  } catch (error) {
+    console.error('Failed to load nests:', error)
+    // Fallback to just own nest
+    mockNests.value = [{
+      id: 'own',
+      username: gameStore.username.value,
+      x: 1500,
+      y: 1000,
+      nestLevel: gameStore.nestLevel.value,
+      eggs: gameStore.eggs.value,
+      decorations: gameStore.decorations.value,
+      totalPoints: gameStore.totalPoints.value,
+      isOwn: true,
+      isFriend: false,
+      rank: 1
+    }]
+  }
+}
 
 const totalNests = computed(() => mockNests.value.length)
 const onlineUsers = computed(() => Math.floor(mockNests.value.length * 0.7))
 
-onMounted(() => {
+const trees = ref([])
+
+onMounted(async () => {
+  await loadNests()
+  trees.value = generateTrees(worldWidth.value, worldHeight.value, 50)
   setupCanvas()
   centerOnOwnNest()
   drawMap()

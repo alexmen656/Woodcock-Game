@@ -85,10 +85,10 @@ async function saveUsername() {
   max-width: 1400px;
   margin: 0 auto;
   padding: 0.5rem 2rem;
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 1rem;
+  gap: 2rem;
 }
 
 .logo {
@@ -109,11 +109,13 @@ async function saveUsername() {
   color: var(--primary);
   letter-spacing: -0.02em;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .nav {
   display: flex;
   gap: 0.5rem;
+  justify-content: center;
 }
 
 .nav-link {
@@ -142,6 +144,7 @@ async function saveUsername() {
 .username-section {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
 }
 
 .username-display {
@@ -210,8 +213,12 @@ async function saveUsername() {
 @media (max-width: 768px) {
   .header-content {
     padding: 1rem;
-    flex-direction: column;
+    grid-template-columns: 1fr;
     gap: 1rem;
+  }
+  
+  .logo {
+    justify-content: center;
   }
   
   .logo h1 {
@@ -223,7 +230,6 @@ async function saveUsername() {
   }
 
   .nav {
-    width: 100%;
     justify-content: center;
   }
 
@@ -233,9 +239,9 @@ async function saveUsername() {
   }
 
   .username-section {
-    width: 100%;
     justify-content: center;
   }
+  
 
   .username-input {
     width: 100%;
