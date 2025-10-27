@@ -35,7 +35,7 @@
         >
           {{ paused ? 'Resume' : 'Pause' }}
         </button>
-        <button 
+        <button
           v-if="gameOver"
           @click="backToNest"
           class="btn-back"
@@ -75,6 +75,7 @@
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useGameStore } from '../store/gameStore'
+import { LeaderboardAPI } from '../services/api'
 
 const router = useRouter()
 const gameStore = useGameStore()
@@ -467,7 +468,11 @@ function endGame() {
   gameOver.value = true
   gameStarted.value = false
   
+  // Punkte zum Store hinzufügen
   gameStore.addPoints(score.value)
+  
+  // Game Session zum Backend speichern
+  saveGameSession()
   
   if (score.value > highscore.value) {
     highscore.value = score.value
@@ -478,6 +483,24 @@ function endGame() {
   
   if (animationFrameId) {
     cancelAnimationFrame(animationFrameId)
+  }
+}
+
+async function saveGameSession() {
+  try {
+    const duration = Math.floor(frameCount / 60) // Ungefähr Sekunden (60 FPS)
+    const leavesCollected = Math.floor(score.value / 10) // 10 Punkte pro Blatt
+    
+    await LeaderboardAPI.saveGameSession({
+      username: gameStore.username.value,
+      score: score.value,
+      leavesCollected: leavesCollected,
+      duration: duration
+    })
+    
+    console.log('Game session saved to backend')
+  } catch (error) {
+    console.warn('Failed to save game session:', error)
   }
 }
 

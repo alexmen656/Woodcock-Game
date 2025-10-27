@@ -2,11 +2,11 @@
   <div class="map-view">
     <div class="map-header">
       <h1>🌲 Woodcock Forest</h1>
-      <p class="map-subtitle">Entdecke die Nester anderer Spieler</p>
+      <p class="map-subtitle">Explore Nests of Other Players</p>
       <div class="map-stats">
         <div class="map-stat">
           <span class="stat-icon">🪹</span>
-          <span class="stat-text">{{ totalNests }} Nester</span>
+          <span class="stat-text">{{ totalNests }} Nests</span>
         </div>
         <div class="map-stat">
           <span class="stat-icon">🐦</span>
@@ -19,8 +19,11 @@
         ref="mapCanvasRef" 
         :width="canvasWidth"
         :height="canvasHeight"
-        @click="handleMapClick"
+        @mousedown="handleMouseDown"
         @mousemove="handleMouseMove"
+        @mouseup="handleMouseUp"
+        @mouseleave="handleMouseLeave"
+        @wheel="handleWheel"
         class="map-canvas"
       ></canvas>
       <div 
@@ -38,11 +41,11 @@
             <strong>{{ hoveredNest.nestLevel }}</strong>
           </div>
           <div class="tooltip-stat">
-            <span>Eier:</span>
+            <span>Eggs:</span>
             <strong>{{ hoveredNest.eggs }}</strong>
           </div>
           <div class="tooltip-stat">
-            <span>Punkte:</span>
+            <span>Points:</span>
             <strong>{{ hoveredNest.totalPoints }}</strong>
           </div>
         </div>
@@ -51,19 +54,19 @@
     <div class="map-legend">
       <div class="legend-item">
         <div class="legend-marker own"></div>
-        <span>Dein Nest</span>
+        <span>Your Nest</span>
       </div>
       <div class="legend-item">
         <div class="legend-marker friend"></div>
-        <span>Freunde</span>
+        <span>Friends</span>
       </div>
       <div class="legend-item">
         <div class="legend-marker other"></div>
-        <span>Andere Spieler</span>
+        <span>Other Players</span>
       </div>
       <div class="legend-item">
         <div class="legend-marker tree"></div>
-        <span>Bäume</span>
+        <span>Trees</span>
       </div>
     </div>
     <!--<div class="map-controls">
@@ -98,27 +101,27 @@
               <span class="detail-value">{{ selectedNest.nestLevel }}/10</span>
             </div>
             <div class="detail-stat">
-              <span class="detail-label">Eier</span>
+              <span class="detail-label">Eggs</span>
               <span class="detail-value">{{ selectedNest.eggs }}/5</span>
             </div>
             <div class="detail-stat">
-              <span class="detail-label">Dekorationen</span>
+              <span class="detail-label">Decorations</span>
               <span class="detail-value">{{ selectedNest.decorations }}/8</span>
             </div>
             <div class="detail-stat">
-              <span class="detail-label">Punkte</span>
+              <span class="detail-label">Points</span>
               <span class="detail-value">{{ selectedNest.totalPoints }}</span>
             </div>
           </div>
           <canvas 
             ref="nestPreviewRef" 
-            width="300" 
+            width="300"
             height="300" 
             class="nest-preview"
           ></canvas>
           <div class="detail-actions">
             <button class="btn-action btn-visit" @click="visitNest">
-              Nest besuchen
+              Visit Nest
             </button>
             <button v-if="!selectedNest.isOwn" class="btn-action btn-friend" @click="addFriend">
               {{ selectedNest.isFriend ? '✓ Freund' : '+ Freund hinzufügen' }}
@@ -148,18 +151,32 @@ const hoveredNest = ref(null)
 const selectedNest = ref(null)
 const tooltipX = ref(0)
 const tooltipY = ref(0)
-const zoom = ref(1)
-const offsetX = ref(0)
-const offsetY = ref(0)
+
+const camera = ref({
+  x: 0,
+  y: 0,
+  zoom: 1,
+  minZoom: 0.3,
+  maxZoom: 2
+})
+
+const isDragging = ref(false)
+const hasDragged = ref(false)
+const dragStart = ref({ x: 0, y: 0 })
+const lastMousePos = ref({ x: 0, y: 0 })
+const dragThreshold = 5
+
 const isFullscreen = ref(false)
 
-//mock data
+const worldWidth = computed(() => Math.max(3000, mockNests.value.length * 200))
+const worldHeight = computed(() => Math.max(2000, mockNests.value.length * 150))
+
 const mockNests = ref([
   {
     id: 'own',
     username: 'Du',
-    x: 600,
-    y: 400,
+    x: 1500,
+    y: 1000,
     nestLevel: gameStore.nestLevel.value,
     eggs: gameStore.eggs.value,
     decorations: gameStore.decorations.value,
@@ -171,8 +188,8 @@ const mockNests = ref([
   {
     id: '1',
     username: 'WaldMeister',
-    x: 450,
-    y: 320,
+    x: 850,
+    y: 650,
     nestLevel: 7,
     eggs: 4,
     decorations: 6,
@@ -184,8 +201,8 @@ const mockNests = ref([
   {
     id: '2',
     username: 'BaumFreund',
-    x: 780,
-    y: 280,
+    x: 2100,
+    y: 580,
     nestLevel: 5,
     eggs: 3,
     decorations: 4,
@@ -197,8 +214,8 @@ const mockNests = ref([
   {
     id: '3',
     username: 'NestBauer',
-    x: 320,
-    y: 520,
+    x: 620,
+    y: 1280,
     nestLevel: 8,
     eggs: 5,
     decorations: 7,
@@ -210,8 +227,8 @@ const mockNests = ref([
   {
     id: '4',
     username: 'Vogel123',
-    x: 900,
-    y: 450,
+    x: 2450,
+    y: 920,
     nestLevel: 4,
     eggs: 2,
     decorations: 3,
@@ -223,8 +240,8 @@ const mockNests = ref([
   {
     id: '5',
     username: 'FeatherKing',
-    x: 550,
-    y: 600,
+    x: 1180,
+    y: 1580,
     nestLevel: 9,
     eggs: 5,
     decorations: 8,
@@ -236,8 +253,8 @@ const mockNests = ref([
   {
     id: '6',
     username: 'TreeHugger',
-    x: 200,
-    y: 250,
+    x: 380,
+    y: 480,
     nestLevel: 3,
     eggs: 1,
     decorations: 2,
@@ -245,29 +262,43 @@ const mockNests = ref([
     isOwn: false,
     isFriend: false,
     rank: 12
+  },
+  {
+    id: '7',
+    username: 'SkyFlyer',
+    x: 2800,
+    y: 1350,
+    nestLevel: 6,
+    eggs: 3,
+    decorations: 5,
+    totalPoints: 1800,
+    isOwn: false,
+    isFriend: false,
+    rank: 6
+  },
+  {
+    id: '8',
+    username: 'ForestGuardian',
+    x: 1850,
+    y: 350,
+    nestLevel: 7,
+    eggs: 4,
+    decorations: 6,
+    totalPoints: 2200,
+    isOwn: false,
+    isFriend: true,
+    rank: 4
   }
 ])
 
-const trees = ref([
-  { x: 150, y: 150, size: 1.2 },
-  { x: 350, y: 200, size: 0.9 },
-  { x: 550, y: 180, size: 1.1 },
-  { x: 750, y: 160, size: 1.0 },
-  { x: 950, y: 200, size: 1.3 },
-  { x: 1050, y: 350, size: 0.8 },
-  { x: 250, y: 400, size: 1.0 },
-  { x: 450, y: 550, size: 1.2 },
-  { x: 650, y: 650, size: 0.9 },
-  { x: 850, y: 600, size: 1.1 },
-  { x: 1000, y: 700, size: 1.0 },
-  { x: 150, y: 650, size: 1.2 }
-])
+const trees = ref(generateTrees(worldWidth.value, worldHeight.value, 50))
 
 const totalNests = computed(() => mockNests.value.length)
 const onlineUsers = computed(() => Math.floor(mockNests.value.length * 0.7))
 
 onMounted(() => {
   setupCanvas()
+  centerOnOwnNest()
   drawMap()
   window.addEventListener('resize', handleResize)
 })
@@ -276,10 +307,46 @@ onUnmounted(() => {
   window.removeEventListener('resize', handleResize)
 })
 
+function generateTrees(width, height, count) {
+  const treesArray = []
+  for (let i = 0; i < count; i++) {
+    treesArray.push({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      size: 0.8 + Math.random() * 0.6
+    })
+  }
+  return treesArray
+}
+
+function centerOnOwnNest() {
+  const ownNest = mockNests.value.find(n => n.isOwn)
+  if (ownNest) {
+    camera.value.x = ownNest.x - canvasWidth.value / 2
+    camera.value.y = ownNest.y - canvasHeight.value / 2
+  }
+}
+
 function setupCanvas() {
   const canvas = mapCanvasRef.value
   if (!canvas) return
   mapCtx = canvas.getContext('2d')
+  
+  handleResize()
+}
+
+function worldToScreen(worldX, worldY) {
+  return {
+    x: (worldX - camera.value.x) * camera.value.zoom,
+    y: (worldY - camera.value.y) * camera.value.zoom
+  }
+}
+
+function screenToWorld(screenX, screenY) {
+  return {
+    x: screenX / camera.value.zoom + camera.value.x,
+    y: screenY / camera.value.zoom + camera.value.y
+  }
 }
 
 function drawMap() {
@@ -296,30 +363,100 @@ function drawMap() {
   bgGradient.addColorStop(1, '#c0dcc0')
   ctx.fillStyle = bgGradient
   ctx.fillRect(0, 0, canvas.width, canvas.height)
+  ctx.save()
   
-  ctx.fillStyle = 'rgba(139, 195, 74, 0.1)'
-  for (let i = 0; i < 50; i++) {
-    const x = Math.random() * canvas.width
-    const y = Math.random() * canvas.height
-    ctx.fillRect(x, y, 3, 3)
+  const visibleArea = {
+    left: camera.value.x - 100,
+    right: camera.value.x + canvas.width / camera.value.zoom + 100,
+    top: camera.value.y - 100,
+    bottom: camera.value.y + canvas.height / camera.value.zoom + 100
   }
   
   ctx.strokeStyle = 'rgba(139, 119, 101, 0.3)'
-  ctx.lineWidth = 20
+  ctx.lineWidth = 20 * camera.value.zoom
   ctx.lineCap = 'round'
-  ctx.beginPath()
-  ctx.moveTo(100, 300)
-  ctx.quadraticCurveTo(400, 350, 700, 300)
-  ctx.quadraticCurveTo(900, 280, 1100, 400)
-  ctx.stroke()
+  ctx.lineJoin = 'round'
+  
+  const pathPoints = [
+    { x: 300, y: 500 },
+    { x: 800, y: 400 },
+    { x: 1200, y: 700 },
+    { x: 1600, y: 500 },
+    { x: 2000, y: 800 },
+    { x: 2400, y: 600 },
+    { x: 2800, y: 900 }
+  ]
+  
+  for (let i = 0; i < pathPoints.length - 1; i++) {
+    const p1 = pathPoints[i]
+    const p2 = pathPoints[i + 1]
+    const pos1 = worldToScreen(p1.x, p1.y)
+    const pos2 = worldToScreen(p2.x, p2.y)
+    
+    ctx.beginPath()
+    ctx.moveTo(pos1.x, pos1.y)
+    
+    const midX = (p1.x + p2.x) / 2 + (i % 2 === 0 ? 150 : -150)
+    const midY = (p1.y + p2.y) / 2 + (i % 3 === 0 ? 100 : -100)
+    const midScreen = worldToScreen(midX, midY)
+    
+    ctx.quadraticCurveTo(midScreen.x, midScreen.y, pos2.x, pos2.y)
+    ctx.stroke()
+  }
+  
+  const verticalPaths = [
+    [{ x: 600, y: 300 }, { x: 700, y: 1000 }],
+    [{ x: 1500, y: 200 }, { x: 1400, y: 1200 }],
+    [{ x: 2200, y: 400 }, { x: 2100, y: 1400 }]
+  ]
+  
+  verticalPaths.forEach(path => {
+    const p1 = path[0]
+    const p2 = path[1]
+    const pos1 = worldToScreen(p1.x, p1.y)
+    const pos2 = worldToScreen(p2.x, p2.y)
+    
+    ctx.beginPath()
+    ctx.moveTo(pos1.x, pos1.y)
+    const midX = (p1.x + p2.x) / 2 + 100
+    const midY = (p1.y + p2.y) / 2
+    const midScreen = worldToScreen(midX, midY)
+    ctx.quadraticCurveTo(midScreen.x, midScreen.y, pos2.x, pos2.y)
+    ctx.stroke()
+  })
   
   trees.value.forEach(tree => {
-    drawTree(ctx, tree.x, tree.y, tree.size)
+    if (tree.x >= visibleArea.left && tree.x <= visibleArea.right &&
+        tree.y >= visibleArea.top && tree.y <= visibleArea.bottom) {
+      const screenPos = worldToScreen(tree.x, tree.y)
+      drawTree(ctx, screenPos.x, screenPos.y, tree.size * camera.value.zoom)
+    }
   })
   
   mockNests.value.forEach(nest => {
-    drawMapNest(ctx, nest)
+    if (nest.x >= visibleArea.left && nest.x <= visibleArea.right &&
+        nest.y >= visibleArea.top && nest.y <= visibleArea.bottom) {
+      const screenPos = worldToScreen(nest.x, nest.y)
+      drawMapNest(ctx, nest, screenPos.x, screenPos.y)
+    }
   })
+  
+  drawMiniInfo(ctx)
+  
+  ctx.restore()
+}
+
+function drawMiniInfo(ctx) {
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'
+  ctx.fillRect(10, 10, 180, 60)
+  ctx.strokeStyle = 'var(--border)'
+  ctx.lineWidth = 1
+  ctx.strokeRect(10, 10, 180, 60)
+  
+  ctx.fillStyle = 'var(--primary)'
+  ctx.font = 'bold 12px system-ui'
+  ctx.fillText(`Zoom: ${(camera.value.zoom * 100).toFixed(0)}%`, 20, 30)
+  ctx.fillText(`Pos: ${Math.round(camera.value.x)}, ${Math.round(camera.value.y)}`, 20, 50)
 }
 
 function drawTree(ctx, x, y, size = 1) {
@@ -356,16 +493,14 @@ function drawTree(ctx, x, y, size = 1) {
   ctx.restore()
 }
 
-function drawMapNest(ctx, nest) {
-  const size = 30 + nest.nestLevel * 3
-  const x = nest.x
-  const y = nest.y
+function drawMapNest(ctx, nest, screenX, screenY) {
+  const size = (30 + nest.nestLevel * 3) * camera.value.zoom
   
   ctx.save()
   
   ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'
   ctx.beginPath()
-  ctx.ellipse(x, y + size/2 + 5, size/2 + 5, 8, 0, 0, Math.PI * 2)
+  ctx.ellipse(screenX, screenY + size/2 + 5, size/2 + 5, 8, 0, 0, Math.PI * 2)
   ctx.fill()
   
   let nestColor = '#a0826d'
@@ -374,7 +509,7 @@ function drawMapNest(ctx, nest) {
   
   ctx.fillStyle = nestColor
   ctx.beginPath()
-  ctx.arc(x, y, size/2, 0, Math.PI * 2)
+  ctx.arc(screenX, screenY, size/2, 0, Math.PI * 2)
   ctx.fill()
   
   ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)'
@@ -386,22 +521,22 @@ function drawMapNest(ctx, nest) {
   for (let i = 0; i < 8; i++) {
     const angle = (i / 8) * Math.PI * 2
     ctx.beginPath()
-    ctx.moveTo(x, y)
-    ctx.lineTo(x + Math.cos(angle) * size/2, y + Math.sin(angle) * size/2)
+    ctx.moveTo(screenX, screenY)
+    ctx.lineTo(screenX + Math.cos(angle) * size/2, screenY + Math.sin(angle) * size/2)
     ctx.stroke()
   }
   
   ctx.fillStyle = 'white'
-  ctx.font = 'bold 14px system-ui'
+  ctx.font = `bold ${Math.max(10, 14 * camera.value.zoom)}px system-ui`
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
-  ctx.fillText(nest.nestLevel, x, y)
+  ctx.fillText(nest.nestLevel, screenX, screenY)
   
   if (hoveredNest.value?.id === nest.id) {
     ctx.strokeStyle = '#ffd700'
     ctx.lineWidth = 4
     ctx.beginPath()
-    ctx.arc(x, y, size/2 + 8, 0, Math.PI * 2)
+    ctx.arc(screenX, screenY, size/2 + 8, 0, Math.PI * 2)
     ctx.stroke()
   }
   
@@ -410,12 +545,21 @@ function drawMapNest(ctx, nest) {
     ctx.lineWidth = 5
     ctx.setLineDash([5, 5])
     ctx.beginPath()
-    ctx.arc(x, y, size/2 + 12, 0, Math.PI * 2)
+    ctx.arc(screenX, screenY, size/2 + 12, 0, Math.PI * 2)
     ctx.stroke()
     ctx.setLineDash([])
   }
   
   ctx.restore()
+}
+
+function handleMouseDown(event) {
+  const canvas = mapCanvasRef.value
+  
+  isDragging.value = true
+  hasDragged.value = false
+  dragStart.value = { x: event.clientX, y: event.clientY }
+  lastMousePos.value = { x: event.clientX, y: event.clientY }
 }
 
 function handleMouseMove(event) {
@@ -424,38 +568,113 @@ function handleMouseMove(event) {
   const mouseX = event.clientX - rect.left
   const mouseY = event.clientY - rect.top
   
-  let found = null
-  for (const nest of mockNests.value) {
-    const size = 30 + nest.nestLevel * 3
-    const distance = Math.sqrt((mouseX - nest.x) ** 2 + (mouseY - nest.y) ** 2)
-    if (distance < size/2) {
-      found = nest
-      tooltipX.value = event.clientX + 15
-      tooltipY.value = event.clientY + 15
-      break
+  if (isDragging.value) {
+    const totalDragX = Math.abs(event.clientX - dragStart.value.x)
+    const totalDragY = Math.abs(event.clientY - dragStart.value.y)
+    
+    if (totalDragX > dragThreshold || totalDragY > dragThreshold) {
+      hasDragged.value = true
+      canvas.style.cursor = 'grabbing'
+      
+      const deltaX = event.clientX - lastMousePos.value.x
+      const deltaY = event.clientY - lastMousePos.value.y
+      
+      camera.value.x -= deltaX / camera.value.zoom
+      camera.value.y -= deltaY / camera.value.zoom
+      
+      lastMousePos.value = { x: event.clientX, y: event.clientY }
+      
+      hoveredNest.value = null
+      drawMap()
     }
-  }
-  
-  hoveredNest.value = found
-  
-  canvas.style.cursor = found ? 'pointer' : 'default'
-  
-  if (found) {
-    drawMap()
-  } else if (hoveredNest.value !== found) {
-    drawMap()
+  } else {
+    const worldPos = screenToWorld(mouseX, mouseY)
+    let found = null
+    
+    for (const nest of mockNests.value) {
+      const distance = Math.sqrt((worldPos.x - nest.x) ** 2 + (worldPos.y - nest.y) ** 2)
+      const nestSize = (30 + nest.nestLevel * 3) / 2
+      if (distance < nestSize) {
+        found = nest
+        tooltipX.value = event.clientX + 15
+        tooltipY.value = event.clientY + 15
+        break
+      }
+    }
+    
+    if (hoveredNest.value?.id !== found?.id) {
+      hoveredNest.value = found
+      canvas.style.cursor = found ? 'pointer' : 'grab'
+      drawMap()
+    }
   }
 }
 
-function handleMapClick(event) {
-  if (hoveredNest.value) {
-    selectedNest.value = hoveredNest.value
-    drawMap()
+function handleMouseUp(event) {
+  const canvas = mapCanvasRef.value
+  
+  if (isDragging.value && !hasDragged.value) {
+    const rect = canvas.getBoundingClientRect()
+    const mouseX = event.clientX - rect.left
+    const mouseY = event.clientY - rect.top
     
-    setTimeout(() => {
-      drawNestPreview()
-    }, 50)
+    const worldPos = screenToWorld(mouseX, mouseY)
+    
+    for (const nest of mockNests.value) {
+      const distance = Math.sqrt((worldPos.x - nest.x) ** 2 + (worldPos.y - nest.y) ** 2)
+      const nestSize = (30 + nest.nestLevel * 3) / 2
+      if (distance < nestSize) {
+        selectedNest.value = nest
+        drawMap()
+        setTimeout(() => drawNestPreview(), 50)
+        break
+      }
+    }
   }
+  
+  isDragging.value = false
+  hasDragged.value = false
+  
+  if (canvas) {
+    canvas.style.cursor = hoveredNest.value ? 'pointer' : 'grab'
+  }
+}
+
+function handleMouseLeave(event) {
+  if (isDragging.value) {
+    isDragging.value = false
+    hasDragged.value = false
+  }
+  hoveredNest.value = null
+  const canvas = mapCanvasRef.value
+  if (canvas) {
+    canvas.style.cursor = 'grab'
+  }
+  drawMap()
+}
+
+function handleWheel(event) {
+  event.preventDefault()
+  
+  const canvas = mapCanvasRef.value
+  const rect = canvas.getBoundingClientRect()
+  const mouseX = event.clientX - rect.left
+  const mouseY = event.clientY - rect.top
+  
+  const worldPosBefore = screenToWorld(mouseX, mouseY)
+  
+  const zoomDelta = event.deltaY > 0 ? 0.9 : 1.1
+  camera.value.zoom = Math.max(
+    camera.value.minZoom,
+    Math.min(camera.value.maxZoom, camera.value.zoom * zoomDelta)
+  )
+  
+  const worldPosAfter = screenToWorld(mouseX, mouseY)
+  
+  camera.value.x += worldPosBefore.x - worldPosAfter.x
+  camera.value.y += worldPosBefore.y - worldPosAfter.y
+  
+  drawMap()
 }
 
 function drawNestPreview() {
@@ -544,16 +763,18 @@ function addFriend() {
 }
 
 /*function zoomIn() {
-  zoom.value = Math.min(zoom.value + 0.2, 2)
+  camera.value.zoom = Math.min(camera.value.zoom * 1.2, camera.value.maxZoom)
+  drawMap()
 }
 
 function zoomOut() {
-  zoom.value = Math.max(zoom.value - 0.2, 0.5)
+  camera.value.zoom = Math.max(camera.value.zoom * 0.8, camera.value.minZoom)
+  drawMap()
 }
 
 function centerMap() {
-  offsetX.value = 0
-  offsetY.value = 0
+  centerOnOwnNest()
+  drawMap()
 }
 
 function toggleFullscreen() {
@@ -561,6 +782,10 @@ function toggleFullscreen() {
 }*/
 
 function handleResize() {
+  const maxWidth = Math.min(1200, window.innerWidth - 100)
+  const maxHeight = Math.min(800, window.innerHeight - 400)
+  canvasWidth.value = maxWidth
+  canvasHeight.value = maxHeight
   drawMap()
 }
 </script>
