@@ -63,6 +63,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET["action"]) && $_GET["act
             'error' => true,
             'message' => 'Failed to fetch leaderboard: ' . $e->getMessage()
         ]);
+    }
+    exit();
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET["action"]) && $_GET["action"] == "player") {
@@ -282,11 +284,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET["action"]) && $_GET["act
         ]);
     }
     exit();
-}
-}else{
-http_response_code(400);
-echo json_encode([
-    'error' => true,
-    'message' => 'Invalid action or request method'
-]);
 }

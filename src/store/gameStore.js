@@ -6,7 +6,25 @@ const nestLevel = ref(0)
 const eggs = ref(0)
 const decorations = ref(0)
 const highscore = ref(0)
-const username = ref('Guest_' + Math.floor(Math.random() * 10000))
+
+// Generate username only once and save to localStorage
+function getOrCreateUsername() {
+  try {
+    const saved = localStorage.getItem('woodcock_game_state')
+    if (saved) {
+      const state = JSON.parse(saved)
+      if (state.username) {
+        return state.username
+      }
+    }
+  } catch (e) {
+    console.warn('Failed to load username:', e)
+  }
+  // Generate new username only if none exists
+  return 'Guest_' + Math.floor(Math.random() * 10000)
+}
+
+const username = ref(getOrCreateUsername())
 
 function loadState() {
   try {
@@ -18,7 +36,7 @@ function loadState() {
       eggs.value = state.eggs || 0
       decorations.value = state.decorations || 0
       highscore.value = state.highscore || 0
-      username.value = state.username || username.value
+      // Username already loaded in getOrCreateUsername()
     }
   } catch (e) {
     console.warn('Failed to load state:', e)
@@ -57,7 +75,26 @@ async function syncToBackend() {
   }
 }
 
+// Initialize user in backend
+async function initializeUser() {
+  try {
+    await LeaderboardAPI.updateLeaderboard({
+      username: username.value,
+      totalPoints: totalPoints.value,
+      nestLevel: nestLevel.value,
+      eggs: eggs.value,
+      decorations: decorations.value,
+      highscore: highscore.value
+    })
+    console.log('User initialized in backend')
+  } catch (e) {
+    console.warn('Failed to initialize user:', e)
+  }
+}
+
 loadState()
+// Initialize user in backend on startup
+initializeUser()
 
 export function useGameStore() {
   return {
@@ -68,9 +105,10 @@ export function useGameStore() {
     highscore,
     username,
     
-    setUsername(newUsername) {
+    async setUsername(newUsername) {
       username.value = newUsername
       saveState()
+      await syncToBackend()
     },
     
     async addPoints(points) {
