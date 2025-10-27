@@ -6,6 +6,7 @@ const nestLevel = ref(0)
 const eggs = ref(0)
 const decorations = ref(0)
 const highscore = ref(0)
+const gamesPlayed = ref(0)
 const userId = ref(null)
 
 function getOrCreateUsername() {
@@ -36,6 +37,7 @@ function loadState() {
       eggs.value = state.eggs || 0
       decorations.value = state.decorations || 0
       highscore.value = state.highscore || 0
+      gamesPlayed.value = state.gamesPlayed || 0
       userId.value = state.userId || null
     }
   } catch (e) {
@@ -51,6 +53,7 @@ function saveState() {
       eggs: eggs.value,
       decorations: decorations.value,
       highscore: highscore.value,
+      gamesPlayed: gamesPlayed.value,
       username: username.value,
       userId: userId.value
     }
@@ -68,7 +71,8 @@ async function syncToBackend() {
       nestLevel: nestLevel.value,
       eggs: eggs.value,
       decorations: decorations.value,
-      highscore: highscore.value
+      highscore: highscore.value,
+      gamesPlayed: gamesPlayed.value
     })
     
     if (response.success && response.data && response.data.user_id) {
@@ -95,7 +99,8 @@ async function initializeUser() {
       nestLevel: nestLevel.value,
       eggs: eggs.value,
       decorations: decorations.value,
-      highscore: highscore.value
+      highscore: highscore.value,
+      gamesPlayed: gamesPlayed.value
     })
     
     if (response.success && response.data && response.data.user_id) {
@@ -119,6 +124,7 @@ export function useGameStore() {
     eggs,
     decorations,
     highscore,
+    gamesPlayed,
     username,
     
     async setUsername(newUsername) {
@@ -182,12 +188,17 @@ export function useGameStore() {
 
     async saveGameSession(score, leavesCollected, duration) {
       try {
+        gamesPlayed.value++
+        saveState()
+        
         await LeaderboardAPI.saveGameSession({
           username: username.value,
           score,
           leavesCollected,
           duration
         })
+        
+        await syncToBackend()
       } catch (e) {
         console.warn('Failed to save game session:', e)
       }

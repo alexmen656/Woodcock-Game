@@ -3,8 +3,7 @@
     <header class="app-header">
       <div class="header-content">
         <div @click='router.push("/")' class="logo">
-          <span class="logo-icon"></span>
-          <img width="7.5%" src="./assets/logo.png" alt="">
+          <img class="logo-img" src="./assets/logo.png" alt="Nest Builder Logo">
           <h1>Nest Builder</h1>
         </div>
         <nav class="nav">
@@ -84,10 +83,10 @@ async function saveUsername() {
 .header-content {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0.5rem 2rem;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
+  padding: 0.75rem 2rem;
+  display: flex;
   align-items: center;
+  position: relative;
   gap: 2rem;
 }
 
@@ -96,10 +95,17 @@ async function saveUsername() {
   align-items: center;
   gap: 0.75rem;
   cursor: pointer;
+  transition: opacity 0.2s ease;
 }
 
-.logo-icon {
-  font-size: 2rem;
+.logo:hover {
+  opacity: 0.8;
+}
+
+.logo-img {
+  height: 40px;
+  width: auto;
+  display: block;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
 }
 
@@ -108,14 +114,16 @@ async function saveUsername() {
   font-weight: 700;
   color: var(--primary);
   letter-spacing: -0.02em;
-  cursor: pointer;
+  margin: 0;
   white-space: nowrap;
 }
 
 .nav {
   display: flex;
   gap: 0.5rem;
-  justify-content: center;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .nav-link {
@@ -127,6 +135,7 @@ async function saveUsername() {
   text-decoration: none;
   transition: all 0.2s ease;
   border: 1px solid transparent;
+  white-space: nowrap;
 }
 
 .nav-link:hover {
@@ -145,6 +154,7 @@ async function saveUsername() {
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  margin-left: auto;
 }
 
 .username-display {
@@ -157,6 +167,7 @@ async function saveUsername() {
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .username-display:hover {
@@ -168,6 +179,7 @@ async function saveUsername() {
   width: 20px;
   height: 20px;
   color: var(--primary);
+  flex-shrink: 0;
 }
 
 .username-text {
@@ -181,6 +193,7 @@ async function saveUsername() {
   height: 16px;
   color: var(--text-secondary);
   opacity: 0.6;
+  flex-shrink: 0;
 }
 
 .username-edit {
@@ -213,35 +226,41 @@ async function saveUsername() {
 @media (max-width: 768px) {
   .header-content {
     padding: 1rem;
-    grid-template-columns: 1fr;
+    flex-direction: column;
     gap: 1rem;
+  }
+
+  .nav {
+    position: static;
+    transform: none;
   }
   
   .logo {
     justify-content: center;
+  }
+
+  .logo-img {
+    height: 32px;
   }
   
   .logo h1 {
     font-size: 1.25rem;
   }
 
-  .logo-icon {
-    font-size: 1.75rem;
-  }
-
   .nav {
     justify-content: center;
+    flex-wrap: wrap;
   }
 
   .nav-link {
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 0.875rem;
     font-size: 0.875rem;
   }
 
   .username-section {
     justify-content: center;
+    margin-left: 0;
   }
-  
 
   .username-input {
     width: 100%;
@@ -250,6 +269,21 @@ async function saveUsername() {
   
   .app-main {
     padding: 1rem 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-img {
+    height: 28px;
+  }
+
+  .logo h1 {
+    font-size: 1.125rem;
+  }
+
+  .nav-link {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8125rem;
   }
 }
 </style>

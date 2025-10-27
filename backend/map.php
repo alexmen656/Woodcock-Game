@@ -21,6 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET["action"]) && $_GET["act
                 l.nest_level,
                 l.eggs,
                 l.decorations,
+                l.highscore,
+                l.games_played,
                 u.is_online,
                 (SELECT COUNT(*) + 1 FROM wg_leaderboard WHERE total_points > l.total_points) as `rank`
             FROM wg_leaderboard l
@@ -39,6 +41,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET["action"]) && $_GET["act
                 'nestLevel' => $row['nest_level'],
                 'eggs' => $row['eggs'],
                 'decorations' => $row['decorations'],
+                'highscore' => $row['highscore'],
+                'games_played' => $row['games_played'],
                 'rank' => $row['rank'],
                 'isOnline' => (bool)$row['is_online'],
                 'x' => rand(150, 1050),

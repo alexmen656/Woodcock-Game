@@ -121,6 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $eggs = isset($_POST['eggs']) ? intval($_POST['eggs']) : 0;
         $decorations = isset($_POST['decorations']) ? intval($_POST['decorations']) : 0;
         $highscore = isset($_POST['highscore']) ? intval($_POST['highscore']) : 0;
+        $gamesPlayed = isset($_POST['games_played']) ? intval($_POST['games_played']) : 0;
         
         if (empty($username)) {
             throw new Exception('Username is required');
@@ -143,7 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $leaderboardQuery = "
             INSERT INTO wg_leaderboard (
                 user_id, username, total_points, nest_level, eggs, decorations, highscore, games_played
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, 0)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE
                 username = VALUES(username),
                 total_points = VALUES(total_points),
@@ -151,12 +152,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 eggs = VALUES(eggs),
                 decorations = VALUES(decorations),
                 highscore = GREATEST(highscore, VALUES(highscore)),
+                games_played = VALUES(games_played),
                 last_updated = CURRENT_TIMESTAMP
         ";
         
         $stmt = mysqli_prepare($con, $leaderboardQuery);
-        mysqli_stmt_bind_param($stmt, 'isiiiii', 
-            $userId, $username, $totalPoints, $nestLevel, $eggs, $decorations, $highscore
+        mysqli_stmt_bind_param($stmt, 'isiiiiii', 
+            $userId, $username, $totalPoints, $nestLevel, $eggs, $decorations, $highscore, $gamesPlayed
         );
         mysqli_stmt_execute($stmt);
         

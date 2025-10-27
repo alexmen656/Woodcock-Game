@@ -1,7 +1,7 @@
 <template>
     <div class="home-view">
         <div class="nest-display">
-            <h2>🪹 Your Nest</h2>
+            <h2>Your Nest</h2>
             <canvas ref="nestCanvasRef" width="400" height="400" class="nest-canvas"></canvas>
             <div class="nest-stats">
                 <div class="stat-card">

@@ -1,19 +1,5 @@
 <template>
   <div class="map-view">
-    <div class="map-header">
-      <h1>🌲 Woodcock Forest</h1>
-      <p class="map-subtitle">Explore Nests of Other Players</p>
-      <!--<div class="map-stats">
-        <div class="map-stat">
-          <span class="stat-icon">🪹</span>
-          <span class="stat-text">{{ totalNests }} Nests</span>
-        </div>
-        <div class="map-stat">
-          <span class="stat-icon">🐦</span>
-          <span class="stat-text">{{ onlineUsers }} Online</span>
-        </div>
-      </div>-->
-    </div>
     <div class="map-container">
       <canvas 
         ref="mapCanvasRef" 
@@ -26,6 +12,27 @@
         @wheel="handleWheel"
         class="map-canvas"
       ></canvas>
+      <div class="map-header-floating">
+        <h1>🌲 Woodcock Forest</h1>
+      </div>
+      <div class="map-legend-floating">
+        <div class="legend-item">
+          <div class="legend-marker own"></div>
+          <span>Your Nest</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-marker friend"></div>
+          <span>Friends</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-marker other"></div>
+          <span>Other Players</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-marker tree"></div>
+          <span>Trees</span>
+        </div>
+      </div>
       <div 
         v-if="hoveredNest" 
         class="nest-tooltip"
@@ -51,50 +58,17 @@
         </div>
       </div>
     </div>
-    <div class="map-legend">
-      <div class="legend-item">
-        <div class="legend-marker own"></div>
-        <span>Your Nest</span>
-      </div>
-      <div class="legend-item">
-        <div class="legend-marker friend"></div>
-        <span>Friends</span>
-      </div>
-      <div class="legend-item">
-        <div class="legend-marker other"></div>
-        <span>Other Players</span>
-      </div>
-      <div class="legend-item">
-        <div class="legend-marker tree"></div>
-        <span>Trees</span>
-      </div>
-    </div>
-    <!--<div class="map-controls">
-      <button @click="zoomIn" class="btn-control" title="Zoom In">
-        <span>🔍+</span>
-      </button>
-      <button @click="zoomOut" class="btn-control" title="Zoom Out">
-        <span>🔍-</span>
-      </button>
-      <button @click="centerMap" class="btn-control" title="Zentrieren">
-        <span>🎯</span>
-      </button>
-      <button @click="toggleFullscreen" class="btn-control" title="Vollbild">
-        <span>{{ isFullscreen ? '📐' : '⛶' }}</span>
-      </button>
-    </div>-->
     <transition name="slide">
       <div v-if="selectedNest" class="nest-detail-panel">
         <button @click="closeDetail" class="btn-close">✕</button>
         <div class="detail-content">
           <div class="detail-header">
-            <div class="detail-avatar">🐦</div>
+            <div class="detail-avatar">{{ selectedNest.isOwn ? '�' : '�🐦' }}</div>
             <div class="detail-info">
               <h3>{{ selectedNest.username }}</h3>
               <span class="detail-rank">Rang #{{ selectedNest.rank }}</span>
             </div>
           </div>
-          
           <div class="detail-stats-grid">
             <div class="detail-stat">
               <span class="detail-label">Nest Level</span>
@@ -112,6 +86,14 @@
               <span class="detail-label">Points</span>
               <span class="detail-value">{{ selectedNest.totalPoints }}</span>
             </div>
+            <div class="detail-stat">
+              <span class="detail-label">Highscore</span>
+              <span class="detail-value">{{ selectedNest.highscore || 0 }}</span>
+            </div>
+            <div class="detail-stat">
+              <span class="detail-label">Games Played</span>
+              <span class="detail-value">{{ selectedNest.gamesPlayed || 0 }}</span>
+            </div>
           </div>
           <canvas 
             ref="nestPreviewRef" 
@@ -121,7 +103,7 @@
           ></canvas>
           <div class="detail-actions">
             <button class="btn-action btn-visit" @click="visitNest">
-              Visit Nest
+              {{ selectedNest.isOwn ? '🏠 Go to Nest' : '👁️ Visit Nest' }}
             </button>
             <button v-if="!selectedNest.isOwn" class="btn-action btn-friend" @click="addFriend">
               {{ selectedNest.isFriend ? '✓ Freund' : '+ Freund hinzufügen' }}
@@ -166,15 +148,12 @@ const hasDragged = ref(false)
 const dragStart = ref({ x: 0, y: 0 })
 const lastMousePos = ref({ x: 0, y: 0 })
 const dragThreshold = 5
-
-const isFullscreen = ref(false)
-
 const worldWidth = computed(() => Math.max(3000, mockNests.value.length * 200))
 const worldHeight = computed(() => Math.max(2000, mockNests.value.length * 150))
 
 const mockNests = ref([])
+//const isFullscreen = ref(false)
 
-// Load nests from backend
 async function loadNests() {
   try {
     const response = await axios.get('https://alex.polan.sk/woodcock-game/api/map.php', {
@@ -184,7 +163,7 @@ async function loadNests() {
     })
     
     if (response.data.success && response.data.data) {
-      // Add own nest
+
       const ownNest = {
         id: 'own',
         owner: gameStore.username.value,
@@ -195,12 +174,13 @@ async function loadNests() {
         eggs: gameStore.eggs.value,
         decorations: gameStore.decorations.value,
         totalPoints: gameStore.totalPoints.value,
+        highscore: gameStore.highscore?.value || 0,
+        gamesPlayed: gameStore.gamesPlayed?.value || 0,
         isOwn: true,
         isFriend: false,
         rank: 1
       }
       
-      // Map backend data to frontend format
       const nests = response.data.data.map(nest => ({
         id: nest.id.toString(),
         username: nest.owner,
@@ -210,6 +190,8 @@ async function loadNests() {
         eggs: nest.eggs,
         decorations: nest.decorations,
         totalPoints: nest.totalPoints,
+        highscore: nest.highscore || 0,
+        gamesPlayed: nest.games_played || 0,
         rank: nest.rank,
         isOwn: nest.owner === gameStore.username.value,
         isFriend: false
@@ -220,7 +202,6 @@ async function loadNests() {
     }
   } catch (error) {
     console.error('Failed to load nests:', error)
-    // Fallback to just own nest
     mockNests.value = [{
       id: 'own',
       username: gameStore.username.value,
@@ -230,6 +211,8 @@ async function loadNests() {
       eggs: gameStore.eggs.value,
       decorations: gameStore.decorations.value,
       totalPoints: gameStore.totalPoints.value,
+      highscore: gameStore.highscore?.value || 0,
+      gamesPlayed: gameStore.gamesPlayed?.value || 0,
       isOwn: true,
       isFriend: false,
       rank: 1
@@ -730,8 +713,8 @@ function toggleFullscreen() {
 }*/
 
 function handleResize() {
-  const maxWidth = Math.min(1200, window.innerWidth - 100)
-  const maxHeight = Math.min(800, window.innerHeight - 400)
+  const maxWidth = window.innerWidth
+  const maxHeight = window.innerHeight - 120
   canvasWidth.value = maxWidth
   canvasHeight.value = maxHeight
   drawMap()
@@ -739,73 +722,102 @@ function handleResize() {
 </script>
 
 <style scoped>
+main.app-main {
+  padding: none !important
+}
 .map-view {
   width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 1.5rem;
-}
-
-.map-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.map-header h1 {
-  font-size: 2.5rem;
-  color: var(--primary);
-  margin-bottom: 0.5rem;
-  font-weight: 700;
-}
-
-.map-subtitle {
-  font-size: 1.125rem;
-  color: var(--text-secondary);
-  margin-bottom: 1.5rem;
-}
-
-.map-stats {
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-  flex-wrap: wrap;
-}
-
-.map-stat {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: var(--bg-card);
-  padding: 0.75rem 1.5rem;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
-}
-
-.stat-icon {
-  font-size: 1.5rem;
-}
-
-.stat-text {
-  font-weight: 600;
-  color: var(--primary);
+  height: calc(100vh - 120px);
+  margin: 0;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
 }
 
 .map-container {
   position: relative;
+  width: 100%;
+  height: 100%;
   background: var(--bg-card);
-  border-radius: var(--radius);
-  padding: 1rem;
-  box-shadow: var(--shadow-md);
-  border: 1px solid var(--border);
   overflow: hidden;
 }
 
 .map-canvas {
   display: block;
   width: 100%;
-  height: auto;
-  border-radius: 8px;
+  height: 100%;
+  cursor: grab;
+}
+
+.map-header-floating {
+  position: absolute;
+  top: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 0.75rem 2rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(10px);
+}
+
+.map-header-floating h1 {
+  font-size: 1.75rem;
+  color: var(--primary);
+  margin: 0;
+  font-weight: 700;
+  text-align: center;
+}
+
+.map-legend-floating {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 1.5rem;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(10px);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.legend-marker {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.legend-marker.own {
+  background: var(--accent);
+}
+
+.legend-marker.friend {
+  background: #4299e1;
+}
+
+.legend-marker.other {
+  background: #a0826d;
+}
+
+.legend-marker.tree {
+  background: #8bc34a;
 }
 
 .nest-tooltip {
@@ -855,80 +867,6 @@ function handleResize() {
 .tooltip-stat strong {
   color: var(--accent);
   font-weight: 600;
-}
-
-.map-legend {
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-  margin-top: 1.5rem;
-  padding: 1rem;
-  background: var(--bg-card);
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  flex-wrap: wrap;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-}
-
-.legend-marker {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 2px solid white;
-}
-
-.legend-marker.own {
-  background: var(--accent);
-}
-
-.legend-marker.friend {
-  background: #4299e1;
-}
-
-.legend-marker.other {
-  background: #a0826d;
-}
-
-.legend-marker.tree {
-  background: #8bc34a;
-}
-
-.map-controls {
-  position: absolute;
-  bottom: 2rem;
-  right: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.btn-control {
-  width: 48px;
-  height: 48px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: var(--shadow-sm);
-  font-size: 1.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.btn-control:hover {
-  background: white;
-  border-color: var(--accent);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
 }
 
 .nest-detail-panel {
@@ -1112,28 +1050,35 @@ function handleResize() {
     max-width: 500px;
     margin: 0 auto;
   }
-
-  .map-controls {
-    right: 1rem;
-    bottom: 1rem;
-  }
 }
 
 @media (max-width: 768px) {
   .map-view {
-    padding: 1rem;
+    height: calc(100vh - 80px);
   }
 
-  .map-header h1 {
-    font-size: 2rem;
+  .map-header-floating {
+    top: 0.75rem;
+    padding: 0.5rem 1.25rem;
   }
 
-  .map-stats {
+  .map-header-floating h1 {
+    font-size: 1.25rem;
+  }
+
+  .map-legend-floating {
+    bottom: 0.75rem;
+    padding: 0.5rem 1rem;
     gap: 1rem;
   }
 
-  .map-legend {
-    gap: 1rem;
+  .legend-item {
+    font-size: 0.75rem;
+  }
+
+  .legend-marker {
+    width: 16px;
+    height: 16px;
   }
 
   .nest-detail-panel {
@@ -1146,6 +1091,11 @@ function handleResize() {
     border-radius: var(--radius) var(--radius) 0 0;
     max-height: 80vh;
     width: 100%;
+    padding: 1.5rem;
+  }
+
+  .detail-stats-grid {
+    grid-template-columns: 1fr 1fr;
   }
 
   .slide-enter-from {
@@ -1156,4 +1106,5 @@ function handleResize() {
     transform: translateY(100%);
   }
 }
+
 </style>

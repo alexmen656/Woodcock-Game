@@ -58,7 +58,8 @@ export const LeaderboardAPI = {
         nest_level: playerData.nestLevel,
         eggs: playerData.eggs,
         decorations: playerData.decorations,
-        highscore: playerData.highscore || 0
+        highscore: playerData.highscore || 0,
+        games_played: playerData.gamesPlayed || 0
       })
 
       const response = await apiClient.post('', formData)

@@ -467,19 +467,15 @@ function togglePause() {
 function endGame() {
   gameOver.value = true
   gameStarted.value = false
-  
-  // Punkte zum Store hinzufügen
   gameStore.addPoints(score.value)
   
-  // Game Session zum Backend speichern
-  saveGameSession()
-  
-  if (score.value > highscore.value) {
-    highscore.value = score.value
+  const isNewHS = gameStore.updateHighscore(score.value)
+  if (isNewHS) {
     isNewHighscore.value = true
-    saveHighscore()
     playSound('highscore')
   }
+  
+  saveGameSession()
   
   if (animationFrameId) {
     cancelAnimationFrame(animationFrameId)
@@ -488,15 +484,10 @@ function endGame() {
 
 async function saveGameSession() {
   try {
-    const duration = Math.floor(frameCount / 60) // Ungefähr Sekunden (60 FPS)
-    const leavesCollected = Math.floor(score.value / 10) // 10 Punkte pro Blatt
+    const duration = Math.floor(frameCount / 60)
+    const leavesCollected = Math.floor(score.value / 10)
     
-    await LeaderboardAPI.saveGameSession({
-      username: gameStore.username.value,
-      score: score.value,
-      leavesCollected: leavesCollected,
-      duration: duration
-    })
+    await gameStore.saveGameSession(score.value, leavesCollected, duration)
     
     console.log('Game session saved to backend')
   } catch (error) {
