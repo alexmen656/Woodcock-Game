@@ -80,6 +80,11 @@
                             </button>
                         </div>
                     </div>
+                </div>
+            </div>
+            <div class="upgrades-section">
+                <h3>Game Upgrades</h3>
+                <div class="upgrade-grid">
                     <div class="upgrade-card" :class="{ locked: totalPoints < speedUpgradeCost }">
                         <div class="upgrade-header">
                             <h4>⚡ Speed Boost</h4>
@@ -91,6 +96,34 @@
                             <button @click="upgradeSpeed"
                                 :disabled="totalPoints < speedUpgradeCost || speedLevel >= 10" class="btn-upgrade">
                                 {{ speedLevel >= 10 ? 'Max Speed' : 'Upgrade' }}
+                            </button>
+                        </div>
+                    </div>
+                    <div class="upgrade-card" :class="{ locked: totalPoints < sizeUpgradeCost }">
+                        <div class="upgrade-header">
+                            <h4>Size Increase</h4>
+                            <span class="upgrade-level">Level {{ sizeLevel }}/10</span>
+                        </div>
+                        <p class="upgrade-desc">Make your bird bigger to catch more leaves</p>
+                        <div class="upgrade-footer">
+                            <span class="upgrade-cost">{{ sizeUpgradeCost }} Points</span>
+                            <button @click="upgradeSize"
+                                :disabled="totalPoints < sizeUpgradeCost || sizeLevel >= 10" class="btn-upgrade">
+                                {{ sizeLevel >= 10 ? 'Max Size' : 'Upgrade' }}
+                            </button>
+                        </div>
+                    </div>
+                    <div class="upgrade-card" :class="{ locked: totalPoints < leafSizeUpgradeCost }">
+                        <div class="upgrade-header">
+                            <h4>🍂 Leaf Size</h4>
+                            <span class="upgrade-level">Level {{ leafSizeLevel }}/10</span>
+                        </div>
+                        <p class="upgrade-desc">Increase the size of leaves for easier catching</p>
+                        <div class="upgrade-footer">
+                            <span class="upgrade-cost">{{ leafSizeUpgradeCost }} Points</span>
+                            <button @click="upgradeLeafSize"
+                                :disabled="totalPoints < leafSizeUpgradeCost || leafSizeLevel >= 10" class="btn-upgrade">
+                                {{ leafSizeLevel >= 10 ? 'Max Size' : 'Upgrade' }}
                             </button>
                         </div>
                     </div>
@@ -146,6 +179,16 @@ const speedLevel = computed(() => {
     return typeof val === 'number' ? val : 0
 })
 
+const sizeLevel = computed(() => {
+    const val = gameStore.sizeLevel.value
+    return typeof val === 'number' ? val : 0
+})
+
+const leafSizeLevel = computed(() => {
+    const val = gameStore.leafSizeLevel.value
+    return typeof val === 'number' ? val : 0
+})
+
 const nestUpgradeCost = computed(() => {
     const level = nestLevel.value
     return (level + 1) * 100
@@ -164,6 +207,16 @@ const decorationUpgradeCost = computed(() => {
 const speedUpgradeCost = computed(() => {
     const level = speedLevel.value
     return (level + 1) * 120
+})
+
+const sizeUpgradeCost = computed(() => {
+    const level = sizeLevel.value
+    return (level + 1) * 100
+})
+
+const leafSizeUpgradeCost = computed(() => {
+    const level = leafSizeLevel.value
+    return (level + 1) * 110
 })
 
 onMounted(() => {
@@ -435,6 +488,44 @@ function upgradeSpeed() {
         console.log('Upgrade Speed - After:', {
             totalPoints: totalPoints.value,
             speedLevel: speedLevel.value
+        })
+    }
+}
+
+function upgradeSize() {
+    console.log('Upgrade Size - Before:', {
+        totalPoints: totalPoints.value,
+        sizeLevel: sizeLevel.value,
+        cost: sizeUpgradeCost.value
+    })
+    
+    if (totalPoints.value >= sizeUpgradeCost.value && sizeLevel.value < 10) {
+        gameStore.spendPoints(sizeUpgradeCost.value)
+        gameStore.upgradeSize()
+        playUpgradeSound()
+        
+        console.log('Upgrade Size - After:', {
+            totalPoints: totalPoints.value,
+            sizeLevel: sizeLevel.value
+        })
+    }
+}
+
+function upgradeLeafSize() {
+    console.log('Upgrade Leaf Size - Before:', {
+        totalPoints: totalPoints.value,
+        leafSizeLevel: leafSizeLevel.value,
+        cost: leafSizeUpgradeCost.value
+    })
+    
+    if (totalPoints.value >= leafSizeUpgradeCost.value && leafSizeLevel.value < 10) {
+        gameStore.spendPoints(leafSizeUpgradeCost.value)
+        gameStore.upgradeLeafSize()
+        playUpgradeSound()
+        
+        console.log('Upgrade Leaf Size - After:', {
+            totalPoints: totalPoints.value,
+            leafSizeLevel: leafSizeLevel.value
         })
     }
 }

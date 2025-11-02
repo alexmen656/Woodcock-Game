@@ -9,6 +9,8 @@ const highscore = ref(0)
 const gamesPlayed = ref(0)
 const userId = ref(null)
 const speedLevel = ref(0)
+const sizeLevel = ref(0)
+const leafSizeLevel = ref(0)
 
 function getOrCreateUsername() {
   try {
@@ -41,6 +43,8 @@ function loadState() {
       gamesPlayed.value = state.gamesPlayed || 0
       userId.value = state.userId || null
       speedLevel.value = state.speedLevel || 0
+      sizeLevel.value = state.sizeLevel || 0
+      leafSizeLevel.value = state.leafSizeLevel || 0
     }
   } catch (e) {
     console.warn('Failed to load state:', e)
@@ -58,7 +62,9 @@ function saveState() {
       gamesPlayed: gamesPlayed.value,
       username: username.value,
       userId: userId.value,
-      speedLevel: speedLevel.value
+      speedLevel: speedLevel.value,
+      sizeLevel: sizeLevel.value,
+      leafSizeLevel: leafSizeLevel.value
     }
     localStorage.setItem('woodcock_game_state', JSON.stringify(state))
   } catch (e) {
@@ -130,6 +136,8 @@ export function useGameStore() {
     gamesPlayed,
     username,
     speedLevel,
+    sizeLevel,
+    leafSizeLevel,
     
     async setUsername(newUsername) {
       const oldUsername = username.value
@@ -187,6 +195,22 @@ export function useGameStore() {
     async upgradeSpeed() {
       if (speedLevel.value < 10) {
         speedLevel.value++
+        saveState()
+        await syncToBackend()
+      }
+    },
+
+    async upgradeSize() {
+      if (sizeLevel.value < 10) {
+        sizeLevel.value++
+        saveState()
+        await syncToBackend()
+      }
+    },
+
+    async upgradeLeafSize() {
+      if (leafSizeLevel.value < 10) {
+        leafSizeLevel.value++
         saveState()
         await syncToBackend()
       }

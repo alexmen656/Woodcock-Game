@@ -137,6 +137,16 @@ const speedLevel = computed(() => {
   return typeof val === 'number' ? val : 0
 })
 
+const sizeLevel = computed(() => {
+  const val = gameStore.sizeLevel.value
+  return typeof val === 'number' ? val : 0
+})
+
+const leafSizeLevel = computed(() => {
+  const val = gameStore.leafSizeLevel.value
+  return typeof val === 'number' ? val : 0
+})
+
 const woodcock = ref({
   x: 400,
   y: 500,
@@ -214,6 +224,12 @@ function startGame() {
   const speedBonus = speedLevel.value * 0.5
   woodcock.value.speed = baseSpeed + speedBonus
 
+  const baseWidth = 60
+  const baseHeight = 50
+  const sizeBonus = sizeLevel.value * 3
+  woodcock.value.width = baseWidth + sizeBonus
+  woodcock.value.height = baseHeight + (sizeBonus * 0.8)
+
   woodcock.value.x = canvasWidth.value / 2 - woodcock.value.width / 2
 
   gameLoop()
@@ -271,11 +287,15 @@ function updateWoodcock() {
 }
 
 function spawnLeaf() {
+  const baseSize = 30
+  const sizeBonus = leafSizeLevel.value * 4
+  const leafSize = baseSize + sizeBonus
+  
   const leaf = {
     x: Math.random() * (canvasWidth.value - 40) + 20,
     y: -30,
-    width: 30,
-    height: 30,
+    width: leafSize,
+    height: leafSize,
     speed: 2 + Math.random() * 2,
     rotation: Math.random() * Math.PI * 2,
     rotationSpeed: (Math.random() - 0.5) * 0.1,
