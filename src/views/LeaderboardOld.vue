@@ -1,27 +1,27 @@
 <template>
-  <div class="leaderboard-view halloween-theme">
+  <div class="leaderboard-view">
     <div class="leaderboard-header">
-      <h1>👻 Leaderboard 🎃</h1>
-      <p class="subtitle">🦇 The most haunted Nest-Builders in the graveyard 🦇</p>
+      <h1>Leaderboard</h1>
+      <p class="subtitle">The best Nest-Builder in the world</p>
     </div>
     <div v-if="loading" class="loading">
-      <div class="spinner halloween-spinner"></div>
-      <p>🕷️ Summoning the Leaderboard... 🕷️</p>
+      <div class="spinner"></div>
+      <p>Loading Leaderboard...</p>
     </div>
-    <div v-else-if="error" class="error-message halloween-error">
-      <span class="error-icon">💀</span>
+    <div v-else-if="error" class="error-message">
+      <span class="error-icon">⚠️</span>
       <p>{{ error }}</p>
-      <button @click="fetchLeaderboard" class="btn-retry">👻 Try Again</button>
+      <button @click="fetchLeaderboard" class="btn-retry">Try Again</button>
     </div>
     <div v-else class="leaderboard-container">
       <div class="stats-overview">
-        <div class="stat-box halloween-stat">
-          <span class="stat-number">👻 {{ totalPlayers }}</span>
-          <span class="stat-label">Haunted Players</span>
+        <div class="stat-box">
+          <span class="stat-number">{{ totalPlayers }}</span>
+          <span class="stat-label">Players</span>
         </div>
-        <div class="stat-box halloween-stat">
-          <span class="stat-number">🎃 {{ totalGames }}</span>
-          <span class="stat-label">Spooky Games Played</span>
+        <div class="stat-box">
+          <span class="stat-number">{{ totalGames }}</span>
+          <span class="stat-label">Total played Games</span>
         </div>
       </div>
 
@@ -43,7 +43,7 @@
           <div class="col-rank">
             <div class="rank-badge" :class="`rank-${player.rank}`">
               <span v-if="player.rank <= 3" class="medal">
-                {{ player.rank === 1 ? '👑' : player.rank === 2 ? '�' : '🕷️' }}
+                {{ player.rank === 1 ? '🥇' : player.rank === 2 ? '🥈' : '🥉' }}
               </span>
               <span v-else class="rank-number">#{{ player.rank }}</span>
             </div>
@@ -58,7 +58,7 @@
                   {{ player.username }}
                 </div>
                 <div class="player-meta">
-                  🕸️ {{ player.games_played }} Haunted Games
+                  {{ player.games_played }} Games Played
                 </div>
               </div>
             </div>
@@ -72,7 +72,7 @@
                 🥚 {{ player.eggs }}
               </span>
               <span class="stat-item" title="Dekorationen">
-                🎃 {{ player.decorations }}
+                ✨ {{ player.decorations }}
               </span>
             </div>
           </div>
@@ -182,91 +182,36 @@ function formatNumber(num) {
   padding: 1.5rem;
 }
 
-.halloween-theme {
-  background: linear-gradient(180deg, #1a0b2e 0%, #16213e 100%);
-  min-height: 100vh;
-  position: relative;
-}
-
-.halloween-theme::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: 
-    radial-gradient(circle at 20% 30%, rgba(255, 110, 0, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 70%, rgba(138, 43, 226, 0.1) 0%, transparent 50%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-.leaderboard-view > * {
-  position: relative;
-  z-index: 1;
-}
-
 .leaderboard-header {
   text-align: center;
   margin-bottom: 2.5rem;
-  text-shadow: 0 0 20px rgba(255, 110, 0, 0.3);
 }
 
 .leaderboard-header h1 {
   font-size: 2.5rem;
-  color: #ff6e00;
+  color: var(--primary);
   margin-bottom: 0;
   font-weight: 700;
-  text-shadow: 
-    0 0 10px #ff6e00,
-    0 0 20px #ff6e00,
-    0 0 30px #ff4500;
-  animation: spookyGlow 3s ease-in-out infinite;
-}
-
-@keyframes spookyGlow {
-  0%, 100% {
-    text-shadow: 
-      0 0 10px #ff6e00,
-      0 0 20px #ff6e00,
-      0 0 30px #ff4500;
-  }
-  50% {
-    text-shadow: 
-      0 0 20px #ff6e00,
-      0 0 30px #ff6e00,
-      0 0 40px #ff4500,
-      0 0 50px #ff4500;
-  }
 }
 
 .subtitle {
   font-size: 1.125rem;
-  color: #b19cd9;
-  text-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
+  color: var(--text-secondary);
 }
 
 .loading {
   text-align: center;
   padding: 4rem 2rem;
-  color: #b19cd9;
 }
 
 .spinner {
   width: 50px;
   height: 50px;
-  border: 4px solid rgba(138, 43, 226, 0.3);
-  border-top-color: #ff6e00;
+  border: 4px solid var(--border);
+  border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto 1rem;
-}
-
-.halloween-spinner {
-  border: 4px solid rgba(255, 110, 0, 0.3);
-  border-top-color: #ff6e00;
-  box-shadow: 0 0 20px rgba(255, 110, 0, 0.5);
 }
 
 @keyframes spin {
@@ -276,47 +221,32 @@ function formatNumber(num) {
 .error-message {
   text-align: center;
   padding: 3rem 2rem;
-  background: rgba(30, 10, 20, 0.8);
-  border: 2px solid #8b0000;
-  border-radius: 12px;
-  backdrop-filter: blur(10px);
-}
-
-.halloween-error {
-  box-shadow: 0 0 30px rgba(139, 0, 0, 0.5);
-  color: #ff6e00;
+  background: #fee;
+  border: 1px solid #fcc;
+  border-radius: var(--radius);
 }
 
 .error-icon {
   font-size: 3rem;
   display: block;
   margin-bottom: 1rem;
-  animation: shake 0.5s ease-in-out infinite;
-}
-
-@keyframes shake {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(-10deg); }
-  75% { transform: rotate(10deg); }
 }
 
 .btn-retry {
   margin-top: 1rem;
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, #ff6e00, #ff4500);
+  background: var(--accent);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius);
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(255, 110, 0, 0.4);
+  transition: all 0.2s ease;
 }
 
 .btn-retry:hover {
-  background: linear-gradient(135deg, #ff4500, #ff6e00);
-  transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 6px 20px rgba(255, 110, 0, 0.6);
+  background: #dd7730;
+  transform: translateY(-1px);
 }
 
 .stats-overview {
@@ -327,38 +257,23 @@ function formatNumber(num) {
 }
 
 .stat-box {
-  background: rgba(30, 10, 40, 0.6);
-  border: 2px solid rgba(138, 43, 226, 0.4);
-  border-radius: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   padding: 1.5rem;
   text-align: center;
-  box-shadow: 0 4px 20px rgba(138, 43, 226, 0.3);
-  backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
-}
-
-.halloween-stat {
-  background: linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(255, 110, 0, 0.1));
-  border: 2px solid rgba(255, 110, 0, 0.5);
-  box-shadow: 0 4px 20px rgba(255, 110, 0, 0.3);
-}
-
-.halloween-stat:hover {
-  transform: translateY(-5px) scale(1.02);
-  box-shadow: 0 8px 30px rgba(255, 110, 0, 0.5);
-  border-color: #ff6e00;
+  box-shadow: var(--shadow-sm);
 }
 
 .stat-number {
   display: block;
   font-size: 2.5rem;
   font-weight: 700;
-  color: #ff6e00;
-  text-shadow: 0 0 10px rgba(255, 110, 0, 0.8);
+  color: var(--accent);
 }
 
 .stat-label {
-  color: #b19cd9;
+  color: var(--text-secondary);
   font-size: 0.875rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -366,12 +281,11 @@ function formatNumber(num) {
 }
 
 .leaderboard-table {
-  background: rgba(20, 5, 30, 0.7);
-  border: 2px solid rgba(138, 43, 226, 0.5);
-  border-radius: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(138, 43, 226, 0.4);
-  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-sm);
 }
 
 .table-header,
@@ -384,24 +298,22 @@ function formatNumber(num) {
 }
 
 .table-header {
-  background: rgba(138, 43, 226, 0.3);
-  border-bottom: 2px solid rgba(255, 110, 0, 0.5);
+  background: var(--bg-main);
+  border-bottom: 2px solid var(--border);
   font-weight: 600;
   font-size: 0.875rem;
-  color: #b19cd9;
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .table-row {
-  border-bottom: 1px solid rgba(138, 43, 226, 0.2);
-  transition: all 0.3s ease;
+  border-bottom: 1px solid var(--border);
+  transition: all 0.2s ease;
 }
 
 .table-row:hover {
-  background: rgba(255, 110, 0, 0.1);
-  box-shadow: inset 0 0 20px rgba(255, 110, 0, 0.2);
-  transform: scale(1.01);
+  background: var(--bg-main);
 }
 
 .table-row:last-child {
@@ -409,9 +321,7 @@ function formatNumber(num) {
 }
 
 .table-row.top-three {
-  background: linear-gradient(90deg, rgba(255, 110, 0, 0.15), transparent);
-  border-left: 3px solid #ff6e00;
-  box-shadow: inset 0 0 20px rgba(255, 110, 0, 0.1);
+  background: linear-gradient(90deg, rgba(237, 137, 54, 0.05), transparent);
 }
 
 .rank-badge {
@@ -423,64 +333,29 @@ function formatNumber(num) {
   border-radius: 50%;
   font-weight: 700;
   font-size: 1.125rem;
-  transition: all 0.3s ease;
 }
 
 .rank-badge.rank-1 {
-  background: linear-gradient(135deg, #ff6e00, #ff4500);
-  box-shadow: 0 4px 20px rgba(255, 110, 0, 0.6), 0 0 40px rgba(255, 110, 0, 0.4);
-  animation: pulseCrown 2s ease-in-out infinite;
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
 }
 
 .rank-badge.rank-2 {
-  background: linear-gradient(135deg, #8b00ff, #6a0dad);
-  box-shadow: 0 4px 20px rgba(138, 43, 226, 0.6), 0 0 40px rgba(138, 43, 226, 0.4);
-  animation: pulseBat 2s ease-in-out infinite;
+  background: linear-gradient(135deg, #c0c0c0, #e8e8e8);
+  box-shadow: 0 4px 12px rgba(192, 192, 192, 0.3);
 }
 
 .rank-badge.rank-3 {
-  background: linear-gradient(135deg, #4b0082, #2e0854);
-  box-shadow: 0 4px 20px rgba(75, 0, 130, 0.6), 0 0 40px rgba(75, 0, 130, 0.4);
-  animation: pulseSpider 2s ease-in-out infinite;
-}
-
-@keyframes pulseCrown {
-  0%, 100% {
-    transform: scale(1);
-    box-shadow: 0 4px 20px rgba(255, 110, 0, 0.6), 0 0 40px rgba(255, 110, 0, 0.4);
-  }
-  50% {
-    transform: scale(1.1);
-    box-shadow: 0 6px 30px rgba(255, 110, 0, 0.8), 0 0 50px rgba(255, 110, 0, 0.6);
-  }
-}
-
-@keyframes pulseBat {
-  0%, 100% {
-    transform: scale(1) rotate(0deg);
-  }
-  50% {
-    transform: scale(1.05) rotate(-5deg);
-  }
-}
-
-@keyframes pulseSpider {
-  0%, 100% {
-    transform: scale(1) rotate(0deg);
-  }
-  50% {
-    transform: scale(1.05) rotate(5deg);
-  }
+  background: linear-gradient(135deg, #cd7f32, #e8a87c);
+  box-shadow: 0 4px 12px rgba(205, 127, 50, 0.3);
 }
 
 .rank-badge .medal {
   font-size: 1.75rem;
-  filter: drop-shadow(0 0 8px rgba(255, 110, 0, 0.8));
 }
 
 .rank-badge .rank-number {
-  color: #b19cd9;
-  text-shadow: 0 0 5px rgba(138, 43, 226, 0.5);
+  color: var(--text-secondary);
 }
 
 .player-info {
@@ -492,28 +367,20 @@ function formatNumber(num) {
 .player-avatar {
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, #ff6e00, #8b00ff);
+  background: linear-gradient(135deg, var(--accent), #dd7730);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.5rem;
-  box-shadow: 0 0 20px rgba(255, 110, 0, 0.5);
+  box-shadow: var(--shadow-sm);
   overflow: hidden;
-  border: 2px solid rgba(138, 43, 226, 0.5);
-  transition: all 0.3s ease;
-}
-
-.player-avatar:hover {
-  transform: rotate(360deg) scale(1.1);
-  box-shadow: 0 0 30px rgba(255, 110, 0, 0.8);
 }
 
 .avatar-logo {
   width: 75%;
   height: auto;
   object-fit: cover;
-  filter: drop-shadow(0 0 5px rgba(255, 110, 0, 0.5));
 }
 
 .player-details {
@@ -522,38 +389,30 @@ function formatNumber(num) {
 
 .player-name {
   font-weight: 600;
-  color: #ff6e00;
+  color: var(--primary);
   font-size: 1.125rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  text-shadow: 0 0 10px rgba(255, 110, 0, 0.3);
 }
 
 .online-dot {
   width: 10px;
   height: 10px;
-  background: #00ff00;
+  background: #4caf50;
   border-radius: 50%;
   display: inline-block;
   animation: pulse-dot 2s infinite;
-  box-shadow: 0 0 10px #00ff00;
 }
 
 @keyframes pulse-dot {
-  0%, 100% { 
-    opacity: 1; 
-    box-shadow: 0 0 10px #00ff00;
-  }
-  50% { 
-    opacity: 0.5;
-    box-shadow: 0 0 20px #00ff00;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 .player-meta {
   font-size: 0.875rem;
-  color: #b19cd9;
+  color: var(--text-secondary);
 }
 
 .stats-mini {
@@ -564,16 +423,8 @@ function formatNumber(num) {
 
 .stat-item {
   font-size: 0.9375rem;
-  color: #b19cd9;
+  color: var(--text-secondary);
   font-weight: 600;
-  text-shadow: 0 0 5px rgba(138, 43, 226, 0.3);
-  transition: all 0.3s ease;
-}
-
-.stat-item:hover {
-  color: #ff6e00;
-  text-shadow: 0 0 10px rgba(255, 110, 0, 0.5);
-  transform: scale(1.1);
 }
 
 .points-display {
@@ -584,24 +435,22 @@ function formatNumber(num) {
   display: block;
   font-size: 1.5rem;
   font-weight: 700;
-  color: #ff6e00;
+  color: var(--accent);
   line-height: 1;
   margin-bottom: 0.25rem;
-  text-shadow: 0 0 15px rgba(255, 110, 0, 0.6);
 }
 
 .points-label {
   font-size: 0.75rem;
-  color: #b19cd9;
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .highscore-badge {
   font-size: 0.75rem;
-  color: #8b00ff;
+  color: var(--text-secondary);
   margin-top: 0.25rem;
-  text-shadow: 0 0 5px rgba(138, 43, 226, 0.5);
 }
 
 .pagination {
@@ -615,35 +464,30 @@ function formatNumber(num) {
 
 .btn-page {
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, rgba(138, 43, 226, 0.3), rgba(255, 110, 0, 0.2));
-  border: 2px solid rgba(255, 110, 0, 0.5);
-  border-radius: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  color: #ff6e00;
-  box-shadow: 0 4px 15px rgba(255, 110, 0, 0.3);
-  backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
+  color: var(--primary);
 }
 
 .btn-page:hover:not(:disabled) {
-  background: linear-gradient(135deg, #ff6e00, #ff4500);
+  background: var(--accent);
   color: white;
-  border-color: #ff6e00;
-  transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 6px 25px rgba(255, 110, 0, 0.5);
+  border-color: var(--accent);
+  transform: translateY(-1px);
 }
 
 .btn-page:disabled {
-  opacity: 0.3;
+  opacity: 0.5;
   cursor: not-allowed;
-  border-color: rgba(138, 43, 226, 0.3);
 }
 
 .page-info {
   font-weight: 600;
-  color: #b19cd9;
-  text-shadow: 0 0 10px rgba(138, 43, 226, 0.3);
+  color: var(--text-secondary);
 }
 
 @media (max-width: 768px) {
