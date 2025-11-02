@@ -36,7 +36,7 @@
         </div>
       </div>
     </header>
-    <main class="app-main" :class="(route === 'leaderboard' || route === 'game') ? 'spoky-theme' : ''">
+    <main class="app-main" :class="(route === 'leaderboard' || route === 'game') ? 'spoky-theme' : '', route === 'map' ? 'p-0' : ''">
       <router-view />
     </main>
   </div>
@@ -82,6 +82,11 @@ async function saveUsername() {
 </script>
 
 <style scoped>
+.p-0 {
+  padding: 0 !important;
+  height: calc(100vh - 67px);
+}
+
 .spoky-theme {
   background: linear-gradient(180deg, #1a0b2e 0%, #16213e 100%);
  /* color: #c0c0d0;*/

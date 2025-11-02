@@ -721,7 +721,7 @@ main.app-main {
 }
 .map-view {
   width: 100%;
-  height: calc(100vh - 120px);
+  height: 100%;
   margin: 0;
   padding: 0;
   position: relative;
