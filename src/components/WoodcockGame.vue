@@ -53,7 +53,7 @@
         @click="handleCanvasClick"></canvas>
       <div v-if="showTutorial" class="tutorial-overlay" @click="startGame">
         <div class="tutorial-content">
-          <h2>Welcome to Nest Builder!</h2>
+          <h2>🎃 Welcome to Spooky Nest Builder! 👻</h2>
           <div class="tutorial-instructions">
            <!--<div class="tutorial-item">
               <svg class="tutorial-icon" viewBox="0 0 24 24" fill="currentColor">
@@ -73,18 +73,18 @@
                 <path
                   d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
               </svg>
-              <span>Collect leaves to earn points</span>
+              <span>🍂 Collect spooky leaves to earn points</span>
             </div>
             <div class="tutorial-item">
               <svg class="tutorial-icon" viewBox="0 0 24 24" fill="currentColor">
                 <path
                   d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
               </svg>
-              <span>Don't lose all hearts!</span>
+              <span>💀 Don't lose all your haunted hearts!</span>
             </div>
           </div>
           <button class="tutorial-btn">
-            Click to Start
+            🎃 Click to Start 👻
             <svg class="arrow-icon" viewBox="0 0 24 24" fill="currentColor">
               <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z" />
             </svg>
@@ -92,11 +92,11 @@
         </div>
       </div>
       <div v-if="gameOver" class="game-over">
-        <h2>Round Over!</h2>
-        <p class="final-score">Collected: {{ score }} Points</p>
-        <p class="total-points">Total: {{ totalPoints }} Points</p>
-        <p v-if="isNewHighscore" class="new-highscore">🎉 New Highscore! 🎉</p>
-        <p class="hint">Go back to the nest to buy upgrades!</p>
+        <h2>🎃 Round Over! 👻</h2>
+        <p class="final-score">Collected: {{ score }} Spooky Points</p>
+        <p class="total-points">Total: {{ totalPoints }} Haunted Points</p>
+        <p v-if="isNewHighscore" class="new-highscore">💀 New Highscore! 💀</p>
+        <p class="hint">🦇 Go back to the nest to buy upgrades! 🕸️</p>
       </div>
     </div>
   </div>
@@ -106,7 +106,8 @@
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useGameStore } from '../store/gameStore'
-import { LeaderboardAPI } from '../services/api'
+//import { LeaderboardAPI } from '../services/api'
+//import { errorMessages } from 'vue/compiler-sfc'
 
 const router = useRouter()
 const gameStore = useGameStore()
@@ -341,10 +342,22 @@ function draw() {
   context.clearRect(0, 0, canvas.width, canvas.height)
 
   const gradient = context.createLinearGradient(0, 0, 0, canvas.height)
-  gradient.addColorStop(0, '#87ceeb')
-  gradient.addColorStop(1, '#fef4e8')
+  gradient.addColorStop(0, '#2d1b4e')
+  gradient.addColorStop(0.5, '#3d2963')
+  gradient.addColorStop(1, '#1a0b2e')
   context.fillStyle = gradient
   context.fillRect(0, 0, canvas.width, canvas.height)
+
+  context.fillStyle = 'rgba(138, 43, 226, 0.05)'
+  for (let i = 0; i < 3; i++) {
+    context.beginPath()
+    context.arc(
+      (canvas.width / 4) * (i + 1), 
+      canvas.height - 50 + Math.sin(frameCount * 0.02 + i) * 20, 
+      100, 0, Math.PI * 2
+    )
+    context.fill()
+  }
 
   leafs.value.forEach(leaf => drawLeaf(context, leaf))
 
@@ -431,10 +444,19 @@ function drawLeaf(context, leaf) {
 function drawCollisionEffect(context, effect) {
   context.save()
   context.globalAlpha = effect.alpha
-  context.fillStyle = '#FFD700'
+  
+  context.shadowColor = '#ff6e00'
+  context.shadowBlur = 20
+  context.fillStyle = '#ff6e00'
   context.font = `bold ${20 * effect.scale}px Arial`
   context.textAlign = 'center'
   context.fillText(`+${effect.points}`, effect.x, effect.y)
+  
+  context.fillStyle = '#8b00ff'
+  context.font = `${15 * effect.scale}px Arial`
+  context.fillText('✨', effect.x - 20, effect.y - 10)
+  context.fillText('✨', effect.x + 20, effect.y - 10)
+  
   context.restore()
 }
 
@@ -442,13 +464,17 @@ function drawPauseScreen() {
   const context = ctx.value
   if (!context) return
 
-  context.fillStyle = 'rgba(0, 0, 0, 0.5)'
+  context.fillStyle = 'rgba(26, 11, 46, 0.8)'
   context.fillRect(0, 0, canvasWidth.value, canvasHeight.value)
 
-  context.fillStyle = 'white'
+  context.fillStyle = '#ff6e00'
+  context.shadowColor = '#ff6e00'
+  context.shadowBlur = 30
   context.font = '48px Arial'
   context.textAlign = 'center'
-  context.fillText('PAUSED', canvasWidth.value / 2, canvasHeight.value / 2)
+  context.fillText('👻 PAUSED 🎃', canvasWidth.value / 2, canvasHeight.value / 2)
+  
+  context.shadowBlur = 0
 }
 
 function handleKeyDown(e) {
@@ -486,6 +512,11 @@ function handleMouseMove(e) {
     woodcock.value.x = canvasWidth.value - woodcock.value.width
   }
 }
+
+/*function getRandomLeafColor() {
+  const colors = ['#ff6b35', '#ff9a56', '#ffa500', '#ffcc00', '#8b4513', '#a0522d']
+  return colors[Math.floor(Math.random() * colors.length)]
+}*/
 
 function handleCanvasClick() {
   if (!gameStarted.value) {
@@ -534,7 +565,7 @@ function backToNest() {
 }
 
 function getRandomLeafColor() {
-  const colors = ['#ff6b35', '#ff9a56', '#ffa500', '#ffcc00', '#8b4513', '#a0522d']
+  const colors = ['#ff6e00', '#ff4500', '#8b00ff', '#6a0dad', '#4b0082', '#2e0854']
   return colors[Math.floor(Math.random() * colors.length)]
 }
 
@@ -611,11 +642,13 @@ function playSound(type) {
   max-width: 900px;
   margin: 0 auto;
   position: relative;
-  /*padding: 1rem;*/
   height: calc(100vh - 120px);
   max-height: calc(100vh - 120px);
   overflow: hidden;
   box-sizing: border-box;
+  background: linear-gradient(180deg, #1a0b2e 0%, #16213e 100%);
+  padding: 1rem;
+  border-radius: 12px;
 }
 
 .game-ui {
@@ -624,12 +657,13 @@ function playSound(type) {
   justify-content: space-between;
   align-items: center;
   padding: 1rem 1.5rem;
-  background: var(--bg-card);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border);
+  background: rgba(30, 10, 40, 0.7);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(138, 43, 226, 0.4);
+  border: 2px solid rgba(255, 110, 0, 0.5);
   flex-wrap: wrap;
   gap: 1rem;
+  backdrop-filter: blur(10px);
 }
 
 .stats {
@@ -647,16 +681,18 @@ function playSound(type) {
 
 .stat-item .label {
   font-size: 0.75rem;
-  color: var(--text-secondary);
+  color: #b19cd9;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  text-shadow: 0 0 5px rgba(138, 43, 226, 0.3);
 }
 
 .stat-item .value {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--accent);
+  color: #ff6e00;
+  text-shadow: 0 0 10px rgba(255, 110, 0, 0.6);
 }
 
 .hearts {
@@ -667,8 +703,21 @@ function playSound(type) {
 .heart-icon {
   width: 24px;
   height: 24px;
-  color: #ef4444;
-  filter: drop-shadow(0 2px 4px rgba(239, 68, 68, 0.3));
+  color: #ff0000;
+  filter: drop-shadow(0 0 8px rgba(255, 0, 0, 0.8)) drop-shadow(0 0 15px rgba(255, 0, 0, 0.5));
+  animation: heartBeat 1.5s ease-in-out infinite;
+}
+
+@keyframes heartBeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.1);
+  }
+  50% {
+    transform: scale(1);
+  }
 }
 
 .stat-item.lives .value {
@@ -708,47 +757,52 @@ function playSound(type) {
 }
 
 .btn-primary {
-  background: var(--accent);
+  background: linear-gradient(135deg, #ff6e00, #ff4500);
   color: white;
+  box-shadow: 0 4px 15px rgba(255, 110, 0, 0.4);
 }
 
 .btn-primary:hover {
-  background: #dd7730;
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-sm);
+  background: linear-gradient(135deg, #ff4500, #ff6e00);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 110, 0, 0.6);
 }
 
 .btn-secondary {
-  background: var(--primary);
+  background: linear-gradient(135deg, #8b00ff, #6a0dad);
   color: white;
+  box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
 }
 
 .btn-secondary:hover {
-  background: #1a202c;
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-sm);
+  background: linear-gradient(135deg, #6a0dad, #8b00ff);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(138, 43, 226, 0.6);
 }
 
 .btn-back {
-  background: var(--primary);
+  background: linear-gradient(135deg, #ff6e00, #ff4500);
   color: white;
+  box-shadow: 0 4px 15px rgba(255, 110, 0, 0.4);
 }
 
 .btn-back:hover {
-  background: #1a202c;
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-sm);
+  background: linear-gradient(135deg, #ff4500, #ff6e00);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 110, 0, 0.6);
 }
 
 .btn-sound {
-  background: var(--bg-main);
+  background: rgba(30, 10, 40, 0.6);
   padding: 0.75rem 1rem;
-  border: 1px solid var(--border);
+  border: 2px solid rgba(138, 43, 226, 0.5);
+  box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
 }
 
 .btn-sound:hover {
-  background: var(--bg-card);
-  border-color: var(--accent);
+  background: rgba(255, 110, 0, 0.2);
+  border-color: #ff6e00;
+  box-shadow: 0 6px 20px rgba(255, 110, 0, 0.5);
 }
 
 .canvas-wrapper {
@@ -758,10 +812,13 @@ function playSound(type) {
 }
 
 canvas {
-  border: 2px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-md);
-  background: white;
+  border: 3px solid #ff6e00;
+  border-radius: 12px;
+  box-shadow: 
+    0 8px 32px rgba(138, 43, 226, 0.4),
+    0 0 40px rgba(255, 110, 0, 0.3),
+    inset 0 0 20px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(180deg, #2d1b4e 0%, #1a0b2e 100%);
   cursor: crosshair;
   display: block;
   width: 800px;
@@ -774,14 +831,15 @@ canvas {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.98);
+  background: rgba(26, 11, 46, 0.95);
   backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius);
+  border-radius: 12px;
   cursor: pointer;
   z-index: 10;
+  box-shadow: inset 0 0 50px rgba(255, 110, 0, 0.2);
 }
 
 .tutorial-content {
@@ -792,9 +850,14 @@ canvas {
 
 .tutorial-content h2 {
   font-size: 2rem;
-  color: var(--primary);
+  color: #ff6e00;
   margin-bottom: 2rem;
   font-weight: 700;
+  text-shadow: 
+    0 0 10px #ff6e00,
+    0 0 20px #ff6e00,
+    0 0 30px #ff4500;
+  animation: spookyGlow 3s ease-in-out infinite;
 }
 
 .tutorial-instructions {
@@ -808,46 +871,56 @@ canvas {
   display: flex;
   align-items: center;
   gap: 1rem;
-  background: var(--bg-main);
+  background: rgba(138, 43, 226, 0.2);
   padding: 1rem 1.5rem;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
+  border-radius: 8px;
+  border: 2px solid rgba(255, 110, 0, 0.4);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.tutorial-item:hover {
+  background: rgba(255, 110, 0, 0.2);
+  border-color: #ff6e00;
+  transform: translateX(5px);
+  box-shadow: 0 4px 15px rgba(255, 110, 0, 0.3);
 }
 
 .tutorial-icon {
   width: 32px;
   height: 32px;
-  color: var(--accent);
+  color: #ff6e00;
   flex-shrink: 0;
+  filter: drop-shadow(0 0 8px rgba(255, 110, 0, 0.5));
 }
 
 .tutorial-item span {
   font-size: 1rem;
-  color: var(--primary);
+  color: #b19cd9;
   font-weight: 500;
   text-align: left;
 }
 
 .tutorial-btn {
   padding: 1rem 2.5rem;
-  background: var(--accent);
+  background: linear-gradient(135deg, #ff6e00, #ff4500);
   color: white;
   border: none;
-  border-radius: var(--radius);
+  border-radius: 8px;
   font-weight: 700;
   font-size: 1.125rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 8px 25px rgba(255, 110, 0, 0.5);
 }
 
 .tutorial-btn:hover {
-  background: #dd7730;
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+  background: linear-gradient(135deg, #ff4500, #ff6e00);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 12px 35px rgba(255, 110, 0, 0.7);
 }
 
 .arrow-icon {
@@ -860,48 +933,56 @@ canvas {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(255, 255, 255, 0.98);
+  background: rgba(26, 11, 46, 0.95);
   padding: 2.5rem 3rem;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-lg);
-  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 
+    0 8px 32px rgba(138, 43, 226, 0.6),
+    0 0 50px rgba(255, 110, 0, 0.4);
+  border: 3px solid #ff6e00;
   text-align: center;
   z-index: 10;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(10px);
 }
 
 .game-over h2 {
   font-size: 2rem;
-  color: var(--primary);
+  color: #ff6e00;
   margin-bottom: 1.25rem;
   font-weight: 700;
+  text-shadow: 
+    0 0 10px #ff6e00,
+    0 0 20px #ff6e00;
+  animation: spookyGlow 3s ease-in-out infinite;
 }
 
 .final-score,
 .total-points {
   font-size: 1.25rem;
   font-weight: 600;
-  color: var(--primary);
+  color: #b19cd9;
   margin: 0.75rem 0;
 }
 
 .total-points {
-  color: var(--accent);
+  color: #ff6e00;
   font-size: 1.5rem;
+  text-shadow: 0 0 10px rgba(255, 110, 0, 0.5);
 }
 
 .hint {
   font-size: 0.9375rem;
-  color: var(--text-secondary);
+  color: #b19cd9;
   margin-top: 1.25rem;
 }
 
 .new-highscore {
   font-size: 1.125rem;
-  color: var(--accent);
+  color: #ff6e00;
   font-weight: 700;
-  animation: pulse 1s infinite;
+  animation: pulse 1s infinite, spookyGlow 3s ease-in-out infinite;
   margin-top: 1rem;
+  text-shadow: 0 0 15px rgba(255, 110, 0, 0.8);
 }
 
 @keyframes pulse {
