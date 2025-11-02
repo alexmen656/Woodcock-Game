@@ -36,23 +36,34 @@
         </div>
       </div>
     </header>
-    <main class="app-main">
+    <main class="app-main" :class="(route === 'leaderboard' || route === 'game') ? 'spoky-theme' : ''">
       <router-view />
     </main>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, nextTick } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, nextTick, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { useGameStore } from './store/gameStore'
 
 const router = useRouter()
+const route2 = useRoute()
 const gameStore = useGameStore()
 const username = computed(() => gameStore.username.value)
 const editingUsername = ref(false)
 const newUsername = ref('')
 const usernameInput = ref(null)
+
+//const route = computed(() => route2.name)
+//console.log('Current route:', route.value)
+
+const route = computed(() => route2.name)
+
+watch(route, (newValue, oldValue) => {
+  console.log('Current route:', newValue)
+})
+
 
 function startEditUsername() {
   newUsername.value = username.value
@@ -71,6 +82,11 @@ async function saveUsername() {
 </script>
 
 <style scoped>
+.spoky-theme {
+  background: linear-gradient(180deg, #1a0b2e 0%, #16213e 100%);
+ /* color: #c0c0d0;*/
+}
+
 .app-header {
   background: var(--bg-card);
   border-bottom: 1px solid var(--border);
