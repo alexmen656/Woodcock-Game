@@ -8,6 +8,7 @@ const decorations = ref(0)
 const highscore = ref(0)
 const gamesPlayed = ref(0)
 const userId = ref(null)
+const speedLevel = ref(0)
 
 function getOrCreateUsername() {
   try {
@@ -39,6 +40,7 @@ function loadState() {
       highscore.value = state.highscore || 0
       gamesPlayed.value = state.gamesPlayed || 0
       userId.value = state.userId || null
+      speedLevel.value = state.speedLevel || 0
     }
   } catch (e) {
     console.warn('Failed to load state:', e)
@@ -55,7 +57,8 @@ function saveState() {
       highscore: highscore.value,
       gamesPlayed: gamesPlayed.value,
       username: username.value,
-      userId: userId.value
+      userId: userId.value,
+      speedLevel: speedLevel.value
     }
     localStorage.setItem('woodcock_game_state', JSON.stringify(state))
   } catch (e) {
@@ -126,6 +129,7 @@ export function useGameStore() {
     highscore,
     gamesPlayed,
     username,
+    speedLevel,
     
     async setUsername(newUsername) {
       const oldUsername = username.value
@@ -157,7 +161,7 @@ export function useGameStore() {
     },
     
     async upgradeNest() {
-      if (nestLevel.value < 10) {
+      if (nestLevel.value < 15) {
         nestLevel.value++
         saveState()
         await syncToBackend()
@@ -165,7 +169,7 @@ export function useGameStore() {
     },
     
     async addEgg() {
-      if (eggs.value < 5) {
+      if (eggs.value < 10) {
         eggs.value++
         saveState()
         await syncToBackend()
@@ -173,8 +177,16 @@ export function useGameStore() {
     },
     
     async addDecoration() {
-      if (decorations.value < 8) {
+      if (decorations.value < 15) {
         decorations.value++
+        saveState()
+        await syncToBackend()
+      }
+    },
+
+    async upgradeSpeed() {
+      if (speedLevel.value < 10) {
+        speedLevel.value++
         saveState()
         await syncToBackend()
       }

@@ -9,10 +9,9 @@
                         <div class="stat-icon">🪹</div>
                         <div class="stat-info">
                             <span class="stat-label">Nest Level</span>
-                            <span class="stat-value">{{ nestLevel }} / 10</span>
+                            <span class="stat-value">{{ nestLevel }} / 15</span>
                         </div>
                     </div>
-
                     <div class="stat-card">
                         <div class="stat-icon">🍂</div>
                         <div class="stat-info">
@@ -20,12 +19,18 @@
                             <span class="stat-value">{{ totalPoints }}</span>
                         </div>
                     </div>
-
                     <div class="stat-card">
                         <div class="stat-icon">🥚</div>
                         <div class="stat-info">
                             <span class="stat-label">Eggs in Nest</span>
                             <span class="stat-value">{{ eggs }}</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⚡</div>
+                        <div class="stat-info">
+                            <span class="stat-label">Speed Level</span>
+                            <span class="stat-value">{{ speedLevel }} / 10</span>
                         </div>
                     </div>
                 </div>
@@ -36,42 +41,56 @@
                     <div class="upgrade-card" :class="{ locked: totalPoints < nestUpgradeCost }">
                         <div class="upgrade-header">
                             <h4>🪹 Expand Nest</h4>
-                            <span class="upgrade-level">Level {{ nestLevel }}/10</span>
+                            <span class="upgrade-level">Level {{ nestLevel }}/15</span>
                         </div>
                         <p class="upgrade-desc">Expand your nest and add more branches</p>
                         <div class="upgrade-footer">
                             <span class="upgrade-cost">{{ nestUpgradeCost }} Points</span>
-                            <button @click="upgradeNest" :disabled="totalPoints < nestUpgradeCost || nestLevel >= 10"
+                            <button @click="upgradeNest" :disabled="totalPoints < nestUpgradeCost || nestLevel >= 15"
                                 class="btn-upgrade">
-                                {{ nestLevel >= 10 ? 'Max Level' : 'Upgrade' }}
+                                {{ nestLevel >= 15 ? 'Max Level' : 'Upgrade' }}
                             </button>
                         </div>
                     </div>
                     <div class="upgrade-card" :class="{ locked: totalPoints < eggUpgradeCost }">
                         <div class="upgrade-header">
                             <h4>🥚 Add Egg</h4>
-                            <span class="upgrade-level">{{ eggs }}/5 Eggs</span>
+                            <span class="upgrade-level">{{ eggs }}/10 Eggs</span>
                         </div>
                         <p class="upgrade-desc">Add another egg to your nest</p>
                         <div class="upgrade-footer">
                             <span class="upgrade-cost">{{ eggUpgradeCost }} Points</span>
-                            <button @click="upgradeEgg" :disabled="totalPoints < eggUpgradeCost || eggs >= 5"
+                            <button @click="upgradeEgg" :disabled="totalPoints < eggUpgradeCost || eggs >= 10"
                                 class="btn-upgrade">
-                                {{ eggs >= 5 ? 'Max Eggs' : 'Add' }}
+                                {{ eggs >= 10 ? 'Max Eggs' : 'Add' }}
                             </button>
                         </div>
                     </div>
                     <div class="upgrade-card" :class="{ locked: totalPoints < decorationUpgradeCost }">
                         <div class="upgrade-header">
                             <h4>✨ Decorations</h4>
-                            <span class="upgrade-level">{{ decorations }}/8 Decorations</span>
+                            <span class="upgrade-level">{{ decorations }}/15 Decorations</span>
                         </div>
                         <p class="upgrade-desc">Decorate your nest with flowers and feathers</p>
                         <div class="upgrade-footer">
                             <span class="upgrade-cost">{{ decorationUpgradeCost }} Points</span>
                             <button @click="upgradeDecoration"
-                                :disabled="totalPoints < decorationUpgradeCost || decorations >= 8" class="btn-upgrade">
-                                {{ decorations >= 8 ? 'Max Decorations' : 'Add' }}
+                                :disabled="totalPoints < decorationUpgradeCost || decorations >= 15" class="btn-upgrade">
+                                {{ decorations >= 15 ? 'Max Decorations' : 'Add' }}
+                            </button>
+                        </div>
+                    </div>
+                    <div class="upgrade-card" :class="{ locked: totalPoints < speedUpgradeCost }">
+                        <div class="upgrade-header">
+                            <h4>⚡ Speed Boost</h4>
+                            <span class="upgrade-level">Level {{ speedLevel }}/10</span>
+                        </div>
+                        <p class="upgrade-desc">Increase your movement speed in the game</p>
+                        <div class="upgrade-footer">
+                            <span class="upgrade-cost">{{ speedUpgradeCost }} Points</span>
+                            <button @click="upgradeSpeed"
+                                :disabled="totalPoints < speedUpgradeCost || speedLevel >= 10" class="btn-upgrade">
+                                {{ speedLevel >= 10 ? 'Max Speed' : 'Upgrade' }}
                             </button>
                         </div>
                     </div>
@@ -106,16 +125,24 @@ const nestLevel = computed(() => {
     const val = gameStore.nestLevel.value
     return typeof val === 'number' ? val : 0
 })
+
 const eggs = computed(() => {
     const val = gameStore.eggs.value
     return typeof val === 'number' ? val : 0
 })
+
 const decorations = computed(() => {
     const val = gameStore.decorations.value
     return typeof val === 'number' ? val : 0
 })
+
 const totalPoints = computed(() => {
     const val = gameStore.totalPoints.value
+    return typeof val === 'number' ? val : 0
+})
+
+const speedLevel = computed(() => {
+    const val = gameStore.speedLevel.value
     return typeof val === 'number' ? val : 0
 })
 
@@ -123,13 +150,20 @@ const nestUpgradeCost = computed(() => {
     const level = nestLevel.value
     return (level + 1) * 100
 })
+
 const eggUpgradeCost = computed(() => {
     const eggCount = eggs.value
     return (eggCount + 1) * 150
 })
+
 const decorationUpgradeCost = computed(() => {
     const decoCount = decorations.value
     return (decoCount + 1) * 80
+})
+
+const speedUpgradeCost = computed(() => {
+    const level = speedLevel.value
+    return (level + 1) * 120
 })
 
 onMounted(() => {
@@ -209,7 +243,12 @@ function drawNest() {
         { x: -15, y: 8 },
         { x: 15, y: 8 },
         { x: -8, y: -5 },
-        { x: 8, y: -5 }
+        { x: 8, y: -5 },
+        { x: -20, y: 0 },
+        { x: 20, y: 0 },
+        { x: 0, y: -10 },
+        { x: -12, y: 12 },
+        { x: 12, y: 12 }
     ]
 
     for (let i = 0; i < eggs.value; i++) {
@@ -246,7 +285,14 @@ function drawNest() {
         { x: -70, y: 60, type: 'feather' },
         { x: 70, y: 60, type: 'flower' },
         { x: 0, y: -90, type: 'flower' },
-        { x: 0, y: 80, type: 'feather' }
+        { x: 0, y: 80, type: 'feather' },
+        { x: -100, y: -30, type: 'flower' },
+        { x: 100, y: -30, type: 'feather' },
+        { x: -60, y: -80, type: 'feather' },
+        { x: 60, y: -80, type: 'flower' },
+        { x: -100, y: 30, type: 'flower' },
+        { x: 100, y: 30, type: 'feather' },
+        { x: -40, y: 90, type: 'flower' }
     ]
 
     for (let i = 0; i < decorations.value; i++) {
@@ -324,7 +370,7 @@ function upgradeNest() {
         cost: nestUpgradeCost.value
     })
     
-    if (totalPoints.value >= nestUpgradeCost.value && nestLevel.value < 10) {
+    if (totalPoints.value >= nestUpgradeCost.value && nestLevel.value < 15) {
         gameStore.spendPoints(nestUpgradeCost.value)
         gameStore.upgradeNest()
         playUpgradeSound()
@@ -343,7 +389,7 @@ function upgradeEgg() {
         cost: eggUpgradeCost.value
     })
     
-    if (totalPoints.value >= eggUpgradeCost.value && eggs.value < 5) {
+    if (totalPoints.value >= eggUpgradeCost.value && eggs.value < 10) {
         gameStore.spendPoints(eggUpgradeCost.value)
         gameStore.addEgg()
         playUpgradeSound()
@@ -362,7 +408,7 @@ function upgradeDecoration() {
         cost: decorationUpgradeCost.value
     })
     
-    if (totalPoints.value >= decorationUpgradeCost.value && decorations.value < 8) {
+    if (totalPoints.value >= decorationUpgradeCost.value && decorations.value < 15) {
         gameStore.spendPoints(decorationUpgradeCost.value)
         gameStore.addDecoration()
         playUpgradeSound()
@@ -370,6 +416,25 @@ function upgradeDecoration() {
         console.log('Upgrade Decoration - After:', {
             totalPoints: totalPoints.value,
             decorations: decorations.value
+        })
+    }
+}
+
+function upgradeSpeed() {
+    console.log('Upgrade Speed - Before:', {
+        totalPoints: totalPoints.value,
+        speedLevel: speedLevel.value,
+        cost: speedUpgradeCost.value
+    })
+    
+    if (totalPoints.value >= speedUpgradeCost.value && speedLevel.value < 10) {
+        gameStore.spendPoints(speedUpgradeCost.value)
+        gameStore.upgradeSpeed()
+        playUpgradeSound()
+        
+        console.log('Upgrade Speed - After:', {
+            totalPoints: totalPoints.value,
+            speedLevel: speedLevel.value
         })
     }
 }

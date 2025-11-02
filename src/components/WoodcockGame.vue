@@ -132,6 +132,11 @@ const totalPoints = computed(() => {
   return typeof val === 'number' ? val : 0
 })
 
+const speedLevel = computed(() => {
+  const val = gameStore.speedLevel.value
+  return typeof val === 'number' ? val : 0
+})
+
 const woodcock = ref({
   x: 400,
   y: 500,
@@ -204,6 +209,10 @@ function startGame() {
   isNewHighscore.value = false
   frameCount = 0
   leafSpawnTimer = 0
+
+  const baseSpeed = 8
+  const speedBonus = speedLevel.value * 0.5
+  woodcock.value.speed = baseSpeed + speedBonus
 
   woodcock.value.x = canvasWidth.value / 2 - woodcock.value.width / 2
 
