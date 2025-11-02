@@ -53,7 +53,7 @@
         @click="handleCanvasClick"></canvas>
       <div v-if="showTutorial" class="tutorial-overlay" @click="startGame">
         <div class="tutorial-content">
-          <h2>🎃 Welcome to Spooky Nest Builder! 👻</h2>
+          <h2>🎃 Welcome to Nest Builder! 👻</h2>
           <div class="tutorial-instructions">
            <!--<div class="tutorial-item">
               <svg class="tutorial-icon" viewBox="0 0 24 24" fill="currentColor">
@@ -73,14 +73,14 @@
                 <path
                   d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
               </svg>
-              <span>🍂 Collect spooky leaves to earn points</span>
+              <span>🍂 Collect leaves to earn points</span>
             </div>
             <div class="tutorial-item">
               <svg class="tutorial-icon" viewBox="0 0 24 24" fill="currentColor">
                 <path
                   d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
               </svg>
-              <span>💀 Don't lose all your haunted hearts!</span>
+              <span>💀 Don't lose all your hearts!</span>
             </div>
           </div>
           <button class="tutorial-btn">
@@ -92,9 +92,11 @@
         </div>
       </div>
       <div v-if="gameOver" class="game-over">
-        <h2>🎃 Round Over! 👻</h2>
-        <p class="final-score">Collected: {{ score }} Spooky Points</p>
-        <p class="total-points">Total: {{ totalPoints }} Haunted Points</p>
+        <h2 v-if="isDead">🔪 GAME OVER! 💀</h2>
+        <h2 v-else>🎃 Round Over! 👻</h2>
+        <p v-if="isDead" class="death-message">You got stabbed by a flying knife! 🩸</p>
+        <p class="final-score">Collected: {{ score }} Points</p>
+        <p class="total-points">Total: {{ totalPoints }} Points</p>
         <p v-if="isNewHighscore" class="new-highscore">💀 New Highscore! 💀</p>
         <p class="hint">🦇 Go back to the nest to buy upgrades! 🕸️</p>
       </div>
@@ -162,6 +164,12 @@ const leafs = ref([])
 let leafSpawnTimer = 0
 const leafSpawnInterval = 80
 
+const knives = ref([])
+let knifeSpawnTimer = 0
+const knifeSpawnInterval = 300
+
+const isDead = ref(false)
+
 const keys = ref({
   left: false,
   right: false
@@ -171,6 +179,8 @@ let animationFrameId = null
 let frameCount = 0
 
 const collisionEffects = ref([])
+
+const bloodSplatters = ref([])
 
 onMounted(() => {
   setupCanvas()
@@ -215,10 +225,14 @@ function startGame() {
   score.value = 0
   lives.value = 3
   leafs.value = []
+  knives.value = []
   collisionEffects.value = []
+  bloodSplatters.value = []
   isNewHighscore.value = false
+  isDead.value = false
   frameCount = 0
   leafSpawnTimer = 0
+  knifeSpawnTimer = 0
 
   const baseSpeed = 8
   const speedBonus = speedLevel.value * 0.5
@@ -258,9 +272,18 @@ function update() {
     leafSpawnTimer = 0
   }
 
+  knifeSpawnTimer++
+  if (knifeSpawnTimer >= knifeSpawnInterval) {
+    spawnKnife()
+    knifeSpawnTimer = 0
+  }
+
   updateLeafs()
+  updateKnives()
   checkCollisions()
+  checkKnifeCollisions()
   updateCollisionEffects()
+  updateBloodSplatters()
 
   if (lives.value <= 0) {
     endGame()
@@ -318,6 +341,63 @@ function updateLeafs() {
   }
 }
 
+function spawnKnife() {
+  const knife = {
+    x: Math.random() * (canvasWidth.value - 60) + 30,
+    y: -50,
+    width: 72,
+    height: 72,
+    speed: 3 + Math.random() * 1.5,
+    rotation: Math.random() * Math.PI * 2,
+    rotationSpeed: (Math.random() - 0.5) * 0.15
+  }
+  knives.value.push(knife)
+}
+
+function updateKnives() {
+  for (let i = knives.value.length - 1; i >= 0; i--) {
+    const knife = knives.value[i]
+    knife.y += knife.speed
+    knife.rotation += knife.rotationSpeed
+
+    if (knife.y > canvasHeight.value + 50) {
+      knives.value.splice(i, 1)
+    }
+  }
+}
+
+function checkKnifeCollisions() {
+  for (let i = knives.value.length - 1; i >= 0; i--) {
+    const knife = knives.value[i]
+    
+    const knifeLeft = knife.x
+    const knifeRight = knife.x + knife.width
+    const knifeTop = knife.y
+    const knifeBottom = knife.y + knife.height
+    
+    const birdLeft = woodcock.value.x
+    const birdRight = woodcock.value.x + woodcock.value.width
+    const birdTop = woodcock.value.y
+    const birdBottom = woodcock.value.y + woodcock.value.height
+
+    if (
+      knifeLeft < birdRight &&
+      knifeRight > birdLeft &&
+      knifeTop < birdBottom &&
+      knifeBottom > birdTop
+    ) {
+
+      knives.value.splice(i, 1)
+      isDead.value = true
+      lives.value = 0
+      createBloodSplatters()
+      playSound('death')
+      endGame()
+      return
+    }
+  }
+}
+
 function checkCollisions() {
   for (let i = leafs.value.length - 1; i >= 0; i--) {
     const leaf = leafs.value[i]
@@ -363,6 +443,37 @@ function updateCollisionEffects() {
   }
 }
 
+function createBloodSplatters() {
+  for (let i = 0; i < 30; i++) {
+    bloodSplatters.value.push({
+      x: Math.random() * canvasWidth.value,
+      y: Math.random() * canvasHeight.value,
+      size: 10 + Math.random() * 30,
+      alpha: 0.6 + Math.random() * 0.4,
+      rotation: Math.random() * Math.PI * 2,
+      velocityX: (Math.random() - 0.5) * 8,
+      velocityY: (Math.random() - 0.5) * 8 - 2,
+      gravity: 0.3,
+      frame: 0
+    })
+  }
+}
+
+function updateBloodSplatters() {
+  for (let i = bloodSplatters.value.length - 1; i >= 0; i--) {
+    const splatter = bloodSplatters.value[i]
+    splatter.frame++
+    splatter.x += splatter.velocityX
+    splatter.y += splatter.velocityY
+    splatter.velocityY += splatter.gravity
+    splatter.alpha -= 0.01
+
+    if (splatter.alpha <= 0 || splatter.frame > 100) {
+      bloodSplatters.value.splice(i, 1)
+    }
+  }
+}
+
 function draw() {
   const canvas = canvasRef.value
   const context = ctx.value
@@ -389,9 +500,11 @@ function draw() {
   }
 
   leafs.value.forEach(leaf => drawLeaf(context, leaf))
+  knives.value.forEach(knife => drawKnife(context, knife))
 
   drawWoodcock(context)
 
+  bloodSplatters.value.forEach(splatter => drawBloodSplatter(context, splatter))
   collisionEffects.value.forEach(effect => drawCollisionEffect(context, effect))
 }
 
@@ -406,7 +519,7 @@ function drawWoodcock(context) {
   context.ellipse(0, 0, w.width / 2, w.height / 2, 0, 0, Math.PI * 2)
   context.fill()
 
-  const wingOffset = Math.sin(w.wingAngle) * 10
+  const wingOffset = isDead.value ? 0 : Math.sin(w.wingAngle) * 10
 
   context.fillStyle = '#A0826D'
   context.beginPath()
@@ -430,10 +543,21 @@ function drawWoodcock(context) {
   context.closePath()
   context.fill()
 
-  context.fillStyle = 'black'
-  context.beginPath()
-  context.arc(-w.width / 4 + 5, -w.height / 4 - 5, 3, 0, Math.PI * 2)
-  context.fill()
+  if (isDead.value) {
+    context.strokeStyle = 'black'
+    context.lineWidth = 2
+    context.beginPath()
+    context.moveTo(-w.width / 4 + 2, -w.height / 4 - 8)
+    context.lineTo(-w.width / 4 + 8, -w.height / 4 - 2)
+    context.moveTo(-w.width / 4 + 8, -w.height / 4 - 8)
+    context.lineTo(-w.width / 4 + 2, -w.height / 4 - 2)
+    context.stroke()
+  } else {
+    context.fillStyle = 'black'
+    context.beginPath()
+    context.arc(-w.width / 4 + 5, -w.height / 4 - 5, 3, 0, Math.PI * 2)
+    context.fill()
+  }
 
   context.fillStyle = '#8B6F47'
   context.beginPath()
@@ -466,6 +590,98 @@ function drawLeaf(context, leaf) {
   context.moveTo(0, -15)
   context.lineTo(0, 10)
   context.stroke()
+
+  context.restore()
+}
+
+function drawKnife(context, knife) {
+  context.save()
+  context.translate(knife.x + knife.width / 2, knife.y + knife.height / 2)
+  context.rotate(knife.rotation)
+  context.scale(1.8, 1.8)
+
+  context.fillStyle = '#c0c0c0'
+  context.beginPath()
+  context.moveTo(0, -18)
+  context.lineTo(4, -8)
+  context.lineTo(4, 8)
+  context.lineTo(-4, 8)
+  context.lineTo(-4, -8)
+  context.closePath()
+  context.fill()
+
+  context.fillStyle = '#e8e8e8'
+  context.beginPath()
+  context.moveTo(-2, -18)
+  context.lineTo(0, -16)
+  context.lineTo(0, 6)
+  context.lineTo(-2, 6)
+  context.closePath()
+  context.fill()
+
+  context.fillStyle = '#8b0000'
+  context.beginPath()
+  context.arc(-1, -5, 2, 0, Math.PI * 2)
+  context.fill()
+  context.beginPath()
+  context.arc(2, 0, 1.5, 0, Math.PI * 2)
+  context.fill()
+  context.beginPath()
+  context.arc(0, 3, 2.5, 0, Math.PI * 2)
+  context.fill()
+
+  context.fillStyle = '#ff0000'
+  context.beginPath()
+  context.arc(1, -10, 1, 0, Math.PI * 2)
+  context.fill()
+
+  context.fillStyle = '#2a2a2a'
+  context.fillRect(-3, 8, 6, 10)
+
+  context.strokeStyle = '#444'
+  context.lineWidth = 1
+  context.beginPath()
+  context.moveTo(-3, 11)
+  context.lineTo(3, 11)
+  context.moveTo(-3, 14)
+  context.lineTo(3, 14)
+  context.stroke()
+
+  context.restore()
+}
+
+function drawBloodSplatter(context, splatter) {
+  context.save()
+  context.globalAlpha = splatter.alpha
+  context.translate(splatter.x, splatter.y)
+  context.rotate(splatter.rotation)
+
+  context.fillStyle = '#8b0000'
+  context.beginPath()
+  context.arc(0, 0, splatter.size, 0, Math.PI * 2)
+  context.fill()
+
+  context.fillStyle = '#ff0000'
+  context.beginPath()
+  context.arc(-splatter.size * 0.2, -splatter.size * 0.2, splatter.size * 0.6, 0, Math.PI * 2)
+  context.fill()
+
+  for (let i = 0; i < 5; i++) {
+    const angle = (i / 5) * Math.PI * 2 + splatter.rotation
+    const distance = splatter.size * 1.2
+    const dropSize = splatter.size * 0.3
+    
+    context.fillStyle = '#8b0000'
+    context.beginPath()
+    context.arc(
+      Math.cos(angle) * distance,
+      Math.sin(angle) * distance,
+      dropSize,
+      0,
+      Math.PI * 2
+    )
+    context.fill()
+  }
 
   context.restore()
 }
@@ -643,6 +859,12 @@ function playSound(type) {
       gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2)
       oscillator.start(audioContext.currentTime)
       oscillator.stop(audioContext.currentTime + 0.2)
+    } else if (type === 'death') {
+      oscillator.frequency.value = 150
+      gainNode.gain.setValueAtTime(0.4, audioContext.currentTime)
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5)
+      oscillator.start(audioContext.currentTime)
+      oscillator.stop(audioContext.currentTime + 0.5)
     } else if (type === 'upgrade') {
       oscillator.frequency.value = 1200
       gainNode.gain.setValueAtTime(0.3, audioContext.currentTime)
@@ -999,6 +1221,15 @@ canvas {
   text-shadow: 0 0 10px rgba(255, 110, 0, 0.5);
 }
 
+.death-message {
+  font-size: 1.125rem;
+  color: #ff0000;
+  font-weight: 600;
+  margin: 0.75rem 0;
+  text-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
+  animation: pulse 1s infinite;
+}
+
 .hint {
   font-size: 0.9375rem;
   color: #b19cd9;
@@ -1015,7 +1246,6 @@ canvas {
 }
 
 @keyframes pulse {
-
   0%,
   100% {
     transform: scale(1);

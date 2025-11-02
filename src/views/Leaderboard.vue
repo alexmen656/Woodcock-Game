@@ -16,15 +16,14 @@
     <div v-else class="leaderboard-container">
       <div class="stats-overview">
         <div class="stat-box halloween-stat">
-          <span class="stat-number">👻 {{ totalPlayers }}</span>
-          <span class="stat-label">Haunted Players</span>
+          <span class="stat-number">{{ totalPlayers }}</span>
+          <span class="stat-label">Players</span>
         </div>
         <div class="stat-box halloween-stat">
-          <span class="stat-number">🎃 {{ totalGames }}</span>
-          <span class="stat-label">Spooky Games Played</span>
+          <span class="stat-number">{{ totalGames }}</span>
+          <span class="stat-label">Games Played</span>
         </div>
       </div>
-
       <div class="leaderboard-table">
         <div class="table-header">
           <div class="col-rank">Rank</div>
@@ -43,7 +42,7 @@
           <div class="col-rank">
             <div class="rank-badge" :class="`rank-${player.rank}`">
               <span v-if="player.rank <= 3" class="medal">
-                {{ player.rank === 1 ? '👑' : player.rank === 2 ? '�' : '🕷️' }}
+                {{ player.rank === 1 ? '👑' : player.rank === 2 ? '🎃' : '🕷️' }}
               </span>
               <span v-else class="rank-number">#{{ player.rank }}</span>
             </div>
@@ -58,7 +57,7 @@
                   {{ player.username }}
                 </div>
                 <div class="player-meta">
-                  🕸️ {{ player.games_played }} Haunted Games
+                  🕸️ {{ player.games_played }} Games
                 </div>
               </div>
             </div>
@@ -344,8 +343,8 @@ function formatNumber(num) {
 }
 
 .halloween-stat:hover {
-  transform: translateY(-5px) scale(1.02);
-  box-shadow: 0 8px 30px rgba(255, 110, 0, 0.5);
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: 0 6px 20px rgba(255, 110, 0, 0.5);
   border-color: #ff6e00;
 }
 
