@@ -26,13 +26,6 @@
                             <span class="stat-value">{{ eggs }}</span>
                         </div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">⚡</div>
-                        <div class="stat-info">
-                            <span class="stat-label">Speed Level</span>
-                            <span class="stat-value">{{ speedLevel }} / 10</span>
-                        </div>
-                    </div>
                 </div>
             </div>
             <div class="upgrades-section">
@@ -564,30 +557,83 @@ function goToMap() {
     max-width: 1400px;
     margin: 0 auto;
     padding: 0;
+    background: linear-gradient(180deg, #1a0b2e 0%, #2d1b4e 50%, #1a0b2e 100%);
+    min-height: 100vh;
 }
 
 .nest-display {
-    background: var(--bg-card);
+    background: linear-gradient(135deg, rgba(26, 11, 46, 0.95), rgba(45, 27, 78, 0.95));
     border-radius: var(--radius);
     padding: 2.5rem;
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--border);
+    box-shadow: 
+        0 8px 32px rgba(138, 43, 226, 0.4),
+        0 0 40px rgba(255, 110, 0, 0.3),
+        inset 0 0 20px rgba(0, 0, 0, 0.2);
+    border: 2px solid rgba(255, 110, 0, 0.5);
+    position: relative;
+    overflow: hidden;
+}
+
+.nest-display::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(138, 43, 226, 0.1) 0%, transparent 70%);
+    animation: spookyPulse 4s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes spookyPulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.3;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.5;
+    }
 }
 
 .nest-display h2 {
     text-align: center;
     font-size: 1.875rem;
-    color: var(--primary);
+    color: #ff6e00;
     margin-bottom: 1.75rem;
     font-weight: 700;
     letter-spacing: -0.02em;
+    text-shadow: 
+        0 0 10px #ff6e00,
+        0 0 20px #ff6e00,
+        0 0 30px #ff4500;
+    animation: spookyGlow 3s ease-in-out infinite;
+}
+
+@keyframes spookyGlow {
+    0%, 100% {
+        text-shadow: 
+            0 0 10px #ff6e00,
+            0 0 20px #ff6e00,
+            0 0 30px #ff4500;
+    }
+    50% {
+        text-shadow: 
+            0 0 20px #ff6e00,
+            0 0 30px #ff6e00,
+            0 0 40px #ff4500,
+            0 0 50px #ff4500;
+    }
 }
 
 .nest-canvas {
-    border: 1px solid var(--border);
+    border: 2px solid #ff6e00;
     border-radius: var(--radius);
-    box-shadow: var(--shadow-sm);
-    background: #fafafa;
+    box-shadow: 
+        0 8px 32px rgba(138, 43, 226, 0.4),
+        0 0 40px rgba(255, 110, 0, 0.3);
+    background: linear-gradient(180deg, #2d1b4e 0%, #1a0b2e 100%);
 }
 
 .nws {
@@ -596,6 +642,8 @@ function goToMap() {
     align-items: flex-start;
     justify-content: center;
     margin-bottom: 2.5rem;
+    position: relative;
+    z-index: 1;
 }
 
 .ns {
@@ -610,20 +658,44 @@ function goToMap() {
     align-items: center;
     gap: 1rem;
     padding: 1.5rem;
-    background: var(--bg-main);
+    background: rgba(26, 11, 46, 0.8);
     border-radius: var(--radius);
-    border: 1px solid var(--border);
+    border: 2px solid rgba(255, 110, 0, 0.4);
     transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #ff6e00, #8b00ff, #ff6e00);
+    border-radius: var(--radius);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
 }
 
 .stat-card:hover {
-    box-shadow: var(--shadow-sm);
+    box-shadow: 
+        0 8px 32px rgba(138, 43, 226, 0.6),
+        0 0 40px rgba(255, 110, 0, 0.4);
     transform: translateY(-2px);
+    border-color: #ff6e00;
+}
+
+.stat-card:hover::before {
+    opacity: 0.3;
 }
 
 .stat-icon {
     font-size: 2.5rem;
-    filter: grayscale(20%);
+    filter: drop-shadow(0 0 10px rgba(255, 110, 0, 0.6));
 }
 
 .stat-info {
@@ -634,29 +706,36 @@ function goToMap() {
 
 .stat-label {
     font-size: 0.8125rem;
-    color: var(--text-secondary);
+    color: #b19cd9;
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    text-shadow: 0 0 5px rgba(138, 43, 226, 0.5);
 }
 
 .stat-value {
     font-size: 2rem;
     font-weight: 700;
-    color: var(--primary);
+    color: #ff6e00;
     line-height: 1;
+    text-shadow: 0 0 10px rgba(255, 110, 0, 0.8);
 }
 
 .upgrades-section {
     margin-bottom: 2.5rem;
+    position: relative;
+    z-index: 1;
 }
 
 .upgrades-section h3 {
     font-size: 1.5rem;
-    color: var(--primary);
+    color: #ff6e00;
     margin-bottom: 1.5rem;
     font-weight: 700;
     letter-spacing: -0.01em;
+    text-shadow: 0 0 10px rgba(255, 110, 0, 0.6);
+    position: relative;
+    display: inline-block;
 }
 
 .upgrade-grid {
@@ -666,22 +745,46 @@ function goToMap() {
 }
 
 .upgrade-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
+    background: linear-gradient(135deg, rgba(26, 11, 46, 0.95), rgba(45, 27, 78, 0.95));
+    border: 2px solid rgba(255, 110, 0, 0.3);
     border-radius: var(--radius);
     padding: 1.5rem;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2),
+                0 0 20px rgba(139, 0, 255, 0.3);
+}
+
+.upgrade-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 110, 0, 0.1) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.upgrade-card:hover:not(.locked)::before {
+    opacity: 1;
 }
 
 .upgrade-card:hover:not(.locked) {
     transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-    border-color: var(--accent);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3),
+                0 0 30px rgba(139, 0, 255, 0.5),
+                0 0 15px rgba(255, 110, 0, 0.4);
+    border-color: rgba(255, 110, 0, 0.6);
 }
 
 .upgrade-card.locked {
-    opacity: 0.6;
-    background: var(--bg-main);
+    opacity: 0.5;
+    background: linear-gradient(135deg, rgba(26, 11, 46, 0.5), rgba(45, 27, 78, 0.5));
+    border-color: rgba(255, 110, 0, 0.2);
 }
 
 .upgrade-header {
@@ -693,26 +796,30 @@ function goToMap() {
 
 .upgrade-header h4 {
     font-size: 1.125rem;
-    color: var(--primary);
+    color: #ff6e00;
     margin: 0;
     font-weight: 600;
+    text-shadow: 0 0 5px rgba(255, 110, 0, 0.5);
 }
 
 .upgrade-level {
     font-size: 0.75rem;
-    color: var(--text-secondary);
-    background: var(--bg-main);
+    color: #b19cd9;
+    background: rgba(26, 11, 46, 0.8);
     padding: 0.375rem 0.75rem;
     border-radius: 6px;
     font-weight: 600;
-    border: 1px solid var(--border);
+    border: 1px solid rgba(139, 0, 255, 0.4);
+    box-shadow: 0 0 10px rgba(139, 0, 255, 0.3);
+    text-shadow: 0 0 3px rgba(177, 156, 217, 0.4);
 }
 
 .upgrade-desc {
-    color: var(--text-secondary);
+    color: #b19cd9;
     font-size: 0.875rem;
     margin-bottom: 1.25rem;
     line-height: 1.5;
+    text-shadow: 0 0 3px rgba(177, 156, 217, 0.3);
 }
 
 .upgrade-footer {
@@ -725,11 +832,33 @@ function goToMap() {
 .upgrade-cost {
     font-size: 1.125rem;
     font-weight: 700;
-    color: var(--accent);
+    color: #ff6e00;
+    text-shadow: 0 0 5px rgba(255, 110, 0, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.upgrade-cost::before {
+    content: '🎃';
+    font-size: 1.3rem;
+    animation: pumpkinSpin 4s ease-in-out infinite;
+}
+
+@keyframes pumpkinSpin {
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+    25% {
+        transform: rotate(-10deg);
+    }
+    75% {
+        transform: rotate(10deg);
+    }
 }
 
 .btn-upgrade {
-    background: var(--accent);
+    background: linear-gradient(135deg, #ff6e00, #ff8c33);
     color: white;
     font-weight: 600;
     padding: 0.625rem 1.25rem;
@@ -737,25 +866,41 @@ function goToMap() {
     border-radius: var(--radius);
     cursor: pointer;
     transition: all 0.2s ease;
+    box-shadow: 0 0 15px rgba(255, 110, 0, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-upgrade::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn-upgrade:hover:not(:disabled)::before {
+    width: 300px;
+    height: 300px;
 }
 
 .btn-upgrade:hover:not(:disabled) {
     transform: translateY(-1px);
-    box-shadow: var(--shadow-sm);
-    background: #dd7730;
+    box-shadow: 0 0 25px rgba(255, 110, 0, 0.6), 0 0 15px rgba(139, 0, 255, 0.4);
+    background: linear-gradient(135deg, #ff8c33, #ff6e00);
 }
 
 .btn-upgrade:disabled {
     opacity: 0.5;
     cursor: not-allowed;
     transform: none;
-    background: var(--text-secondary);
-}
-
-.play-section {
-  text-align: center;
-  padding-top: 2.5rem;
-  border-top: 1px solid var(--border);
+    background: linear-gradient(135deg, rgba(177, 156, 217, 0.4), rgba(177, 156, 217, 0.3));
+    box-shadow: none;
 }
 
 .action-buttons {
@@ -773,34 +918,38 @@ function goToMap() {
   border: none;
   border-radius: var(--radius);
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+  box-shadow: 0 0 20px rgba(255, 110, 0, 0.3);
+  position: relative;
+  overflow: hidden;
 }
 
 .btn-play {
-  background: var(--accent);
+  background: linear-gradient(135deg, #ff6e00, #ff8c33);
   color: white;
   flex: 1;
   min-width: 250px;
+  border: 2px solid rgba(255, 110, 0, 0.5);
 }
 
 .btn-play:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-  background: #dd7730;
+  box-shadow: 0 0 30px rgba(255, 110, 0, 0.6), 0 0 20px rgba(139, 0, 255, 0.4);
+  background: linear-gradient(135deg, #ff8c33, #ff6e00);
 }
 
 .btn-map {
-  background: var(--primary);
+  background: linear-gradient(135deg, #8b00ff, #9f1fff);
   color: white;
   flex: 1;
   min-width: 250px;
+  border: 2px solid rgba(139, 0, 255, 0.5);
 }
 
 .btn-map:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-  background: #1a202c;
+  box-shadow: 0 0 30px rgba(139, 0, 255, 0.6), 0 0 20px rgba(255, 110, 0, 0.4);
+  background: linear-gradient(135deg, #9f1fff, #8b00ff);
 }
 
 @media (max-width: 768px) {
@@ -837,7 +986,7 @@ function goToMap() {
         font-size: 1.125rem;
         padding: 0.875rem 2rem;
     }
-
+    
     .stat-card {
         padding: 1rem;
     }

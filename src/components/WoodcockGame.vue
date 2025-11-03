@@ -53,7 +53,7 @@
         @click="handleCanvasClick"></canvas>
       <div v-if="showTutorial" class="tutorial-overlay" @click="startGame">
         <div class="tutorial-content">
-          <h2>🎃 Welcome to Nest Builder! 👻</h2>
+          <h2>Welcome to Nest Builder!</h2>
           <div class="tutorial-instructions">
            <!--<div class="tutorial-item">
               <svg class="tutorial-icon" viewBox="0 0 24 24" fill="currentColor">
@@ -84,7 +84,7 @@
             </div>
           </div>
           <button class="tutorial-btn">
-            🎃 Click to Start 👻
+            Click to Start
             <svg class="arrow-icon" viewBox="0 0 24 24" fill="currentColor">
               <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z" />
             </svg>
