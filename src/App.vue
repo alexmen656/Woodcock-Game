@@ -93,12 +93,16 @@ async function saveUsername() {
 }
 
 .app-header {
-  background: var(--bg-card);
-  border-bottom: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
+  background: linear-gradient(135deg, rgba(26, 11, 46, 0.98), rgba(45, 27, 78, 0.98));
+  border-bottom: 2px solid rgba(255, 110, 0, 0.3);
+  box-shadow: 
+    0 4px 20px rgba(138, 43, 226, 0.3),
+    0 0 30px rgba(255, 110, 0, 0.2),
+    inset 0 -1px 20px rgba(0, 0, 0, 0.2);
   position: sticky;
   top: 0;
   z-index: 100;
+  backdrop-filter: blur(10px);
 }
 
 .header-content {
@@ -133,10 +137,13 @@ async function saveUsername() {
 .logo h1 {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--primary);
+  color: #ff6e00;
   letter-spacing: -0.02em;
   margin: 0;
   white-space: nowrap;
+  text-shadow: 
+    0 0 10px rgba(255, 110, 0, 0.6),
+    0 0 20px rgba(255, 110, 0, 0.4);
 }
 
 .nav {
@@ -152,23 +159,26 @@ async function saveUsername() {
   border-radius: 8px;
   font-weight: 600;
   font-size: 0.9375rem;
-  color: var(--text-secondary);
+  color: #b19cd9;
   text-decoration: none;
   transition: all 0.2s ease;
   border: 1px solid transparent;
   white-space: nowrap;
+  text-shadow: 0 0 5px rgba(177, 156, 217, 0.3);
 }
 
 .nav-link:hover {
-  color: var(--primary);
-  background: var(--bg-main);
-  border-color: var(--border);
+  color: #ff6e00;
+  background: rgba(26, 11, 46, 0.8);
+  border-color: rgba(255, 110, 0, 0.3);
+  box-shadow: 0 0 15px rgba(255, 110, 0, 0.2);
 }
 
 .nav-link.router-link-active {
   color: white;
-  background: var(--accent);
-  border-color: var(--accent);
+  background: linear-gradient(135deg, #ff6e00, #ff8c33);
+  border-color: rgba(255, 110, 0, 0.5);
+  box-shadow: 0 0 20px rgba(255, 110, 0, 0.4);
 }
 
 .username-section {
@@ -183,37 +193,41 @@ async function saveUsername() {
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  background: var(--bg-main);
-  border: 1px solid var(--border);
+  background: rgba(26, 11, 46, 0.8);
+  border: 1px solid rgba(139, 0, 255, 0.4);
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
+  box-shadow: 0 0 15px rgba(139, 0, 255, 0.2);
 }
 
 .username-display:hover {
-  border-color: var(--accent);
-  background: var(--bg-card);
+  border-color: rgba(255, 110, 0, 0.5);
+  background: rgba(26, 11, 46, 0.95);
+  box-shadow: 0 0 20px rgba(255, 110, 0, 0.3);
 }
 
 .username-icon {
   width: 20px;
   height: 20px;
-  color: var(--primary);
+  color: #ff6e00;
   flex-shrink: 0;
+  filter: drop-shadow(0 0 5px rgba(255, 110, 0, 0.4));
 }
 
 .username-text {
   font-weight: 600;
-  color: var(--primary);
+  color: #ff6e00;
   font-size: 0.9375rem;
+  text-shadow: 0 0 5px rgba(255, 110, 0, 0.3);
 }
 
 .edit-icon {
   width: 16px;
   height: 16px;
-  color: var(--text-secondary);
-  opacity: 0.6;
+  color: #b19cd9;
+  opacity: 0.8;
   flex-shrink: 0;
 }
 
@@ -224,24 +238,25 @@ async function saveUsername() {
 
 .username-input {
   padding: 0.5rem 1rem;
-  border: 2px solid var(--accent);
+  border: 2px solid rgba(255, 110, 0, 0.5);
   border-radius: 8px;
   font-size: 0.9375rem;
   font-weight: 600;
-  color: var(--primary);
-  background: white;
+  color: #1a0b2e;
+  background: rgba(255, 255, 255, 0.95);
   outline: none;
   min-width: 150px;
 }
 
 .username-input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+  border-color: #ff6e00;
+  box-shadow: 0 0 0 3px rgba(255, 110, 0, 0.2), 0 0 15px rgba(255, 110, 0, 0.3);
 }
 
 .app-main {
   min-height: calc(100vh - 80px);
   padding: 1.5rem 0.75rem;
+  background: linear-gradient(180deg, #1a0b2e 0%, #2d1b4e 50%, #1a0b2e 100%);
 }
 
 @media (max-width: 768px) {

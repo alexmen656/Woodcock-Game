@@ -298,9 +298,9 @@ function drawMap() {
   ctx.clearRect(0, 0, canvas.width, canvas.height)
   
   const bgGradient = ctx.createLinearGradient(0, 0, 0, canvas.height)
-  bgGradient.addColorStop(0, '#e8f4e8')
-  bgGradient.addColorStop(0.5, '#d4e8d4')
-  bgGradient.addColorStop(1, '#c0dcc0')
+  bgGradient.addColorStop(0, '#1a0b2e')
+  bgGradient.addColorStop(0.5, '#2d1b4e')
+  bgGradient.addColorStop(1, '#1a0b2e')
   ctx.fillStyle = bgGradient
   ctx.fillRect(0, 0, canvas.width, canvas.height)
   ctx.save()
@@ -312,7 +312,7 @@ function drawMap() {
     bottom: camera.value.y + canvas.height / camera.value.zoom + 100
   }
   
-  ctx.strokeStyle = 'rgba(139, 119, 101, 0.3)'
+  ctx.strokeStyle = 'rgba(139, 0, 255, 0.2)'
   ctx.lineWidth = 20 * camera.value.zoom
   ctx.lineCap = 'round'
   ctx.lineJoin = 'round'
@@ -732,7 +732,7 @@ main.app-main {
   position: relative;
   width: 100%;
   height: 100%;
-  background: var(--bg-card);
+  background: linear-gradient(180deg, #1a0b2e 0%, #2d1b4e 50%, #1a0b2e 100%);
   overflow: hidden;
 }
 
@@ -749,20 +749,25 @@ main.app-main {
   left: 50%;
   transform: translateX(-50%);
   z-index: 100;
-  background: rgba(255, 255, 255, 0.95);
+  background: linear-gradient(135deg, rgba(26, 11, 46, 0.95), rgba(45, 27, 78, 0.95));
   padding: 0.375rem 1rem;
   border-radius: var(--radius);
-  box-shadow: var(--shadow-lg);
-  border: 1px solid var(--border);
+  box-shadow: 
+    0 8px 32px rgba(138, 43, 226, 0.4),
+    0 0 40px rgba(255, 110, 0, 0.3);
+  border: 2px solid rgba(255, 110, 0, 0.5);
   backdrop-filter: blur(10px);
 }
 
 .map-header-floating h1 {
   font-size: 1.75rem;
-  color: var(--primary);
+  color: #ff6e00;
   margin: 0;
   font-weight: 700;
   text-align: center;
+  text-shadow: 
+    0 0 10px rgba(255, 110, 0, 0.6),
+    0 0 20px rgba(255, 110, 0, 0.4);
 }
 
 .map-legend-floating {
@@ -773,11 +778,13 @@ main.app-main {
   display: flex;
   gap: 1.5rem;
   z-index: 100;
-  background: rgba(255, 255, 255, 0.95);
+  background: linear-gradient(135deg, rgba(26, 11, 46, 0.95), rgba(45, 27, 78, 0.95));
   padding: 0.75rem 1.5rem;
   border-radius: var(--radius);
-  box-shadow: var(--shadow-lg);
-  border: 1px solid var(--border);
+  box-shadow: 
+    0 8px 32px rgba(138, 43, 226, 0.4),
+    0 0 40px rgba(255, 110, 0, 0.3);
+  border: 2px solid rgba(255, 110, 0, 0.5);
   backdrop-filter: blur(10px);
   flex-wrap: wrap;
   justify-content: center;
@@ -788,7 +795,8 @@ main.app-main {
   align-items: center;
   gap: 0.5rem;
   font-size: 0.875rem;
-  color: var(--text-secondary);
+  color: #b19cd9;
+  text-shadow: 0 0 5px rgba(177, 156, 217, 0.3);
 }
 
 .legend-marker {
@@ -816,11 +824,13 @@ main.app-main {
 
 .nest-tooltip {
   position: fixed;
-  background: rgba(255, 255, 255, 0.98);
-  border: 1px solid var(--border);
+  background: linear-gradient(135deg, rgba(26, 11, 46, 0.98), rgba(45, 27, 78, 0.98));
+  border: 2px solid rgba(255, 110, 0, 0.5);
   border-radius: 8px;
   padding: 0.75rem;
-  box-shadow: var(--shadow-lg);
+  box-shadow: 
+    0 8px 32px rgba(138, 43, 226, 0.4),
+    0 0 40px rgba(255, 110, 0, 0.3);
   pointer-events: none;
   z-index: 1000;
   backdrop-filter: blur(8px);
@@ -833,7 +843,7 @@ main.app-main {
   gap: 0.5rem;
   margin-bottom: 0.5rem;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgba(255, 110, 0, 0.3);
 }
 
 .tooltip-icon {
@@ -842,7 +852,8 @@ main.app-main {
 
 .tooltip-name {
   font-weight: 600;
-  color: var(--primary);
+  color: #ff6e00;
+  text-shadow: 0 0 5px rgba(255, 110, 0, 0.4);
 }
 
 .tooltip-stats {
@@ -855,12 +866,13 @@ main.app-main {
   display: flex;
   justify-content: space-between;
   font-size: 0.875rem;
-  color: var(--text-secondary);
+  color: #b19cd9;
 }
 
 .tooltip-stat strong {
-  color: var(--accent);
+  color: #ff6e00;
   font-weight: 600;
+  text-shadow: 0 0 3px rgba(255, 110, 0, 0.3);
 }
 
 .nest-detail-panel {
@@ -869,13 +881,16 @@ main.app-main {
   right: 1rem;
   width: 400px;
   max-height: calc(100% - 2rem);
-  background: var(--bg-card);
-  border: 1px solid var(--border);
+  background: linear-gradient(135deg, rgba(26, 11, 46, 0.98), rgba(45, 27, 78, 0.98));
+  border: 2px solid rgba(255, 110, 0, 0.5);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 
+    0 8px 32px rgba(138, 43, 226, 0.4),
+    0 0 40px rgba(255, 110, 0, 0.3);
   padding: 2rem;
   overflow-y: auto;
   z-index: 100;
+  backdrop-filter: blur(10px);
 }
 
 .btn-close {
@@ -884,8 +899,8 @@ main.app-main {
   right: 1rem;
   width: 32px;
   height: 32px;
-  background: var(--bg-main);
-  border: 1px solid var(--border);
+  background: rgba(26, 11, 46, 0.8);
+  border: 1px solid rgba(255, 110, 0, 0.4);
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -893,13 +908,14 @@ main.app-main {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-secondary);
+  color: #b19cd9;
 }
 
 .btn-close:hover {
-  background: #fee;
-  border-color: #f44336;
-  color: #f44336;
+  background: rgba(139, 0, 0, 0.3);
+  border-color: #ff4500;
+  color: #ff4500;
+  box-shadow: 0 0 15px rgba(255, 69, 0, 0.4);
 }
 
 .detail-content {
@@ -928,19 +944,21 @@ main.app-main {
 
 .detail-info h3 {
   font-size: 1.5rem;
-  color: var(--primary);
+  color: #ff6e00;
   margin: 0;
   font-weight: 700;
+  text-shadow: 0 0 10px rgba(255, 110, 0, 0.5);
 }
 
 .detail-rank {
   font-size: 0.875rem;
-  color: var(--text-secondary);
-  background: var(--bg-main);
+  color: #b19cd9;
+  background: rgba(26, 11, 46, 0.8);
   padding: 0.25rem 0.75rem;
   border-radius: 6px;
-  border: 1px solid var(--border);
+  border: 1px solid rgba(139, 0, 255, 0.4);
   font-weight: 600;
+  box-shadow: 0 0 10px rgba(139, 0, 255, 0.3);
 }
 
 .detail-stats-grid {
@@ -950,34 +968,37 @@ main.app-main {
 }
 
 .detail-stat {
-  background: var(--bg-main);
+  background: rgba(26, 11, 46, 0.8);
   padding: 1rem;
   border-radius: 8px;
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255, 110, 0, 0.3);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  box-shadow: 0 0 15px rgba(139, 0, 255, 0.2);
 }
 
 .detail-label {
   font-size: 0.75rem;
-  color: var(--text-secondary);
+  color: #b19cd9;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-weight: 600;
+  text-shadow: 0 0 3px rgba(177, 156, 217, 0.3);
 }
 
 .detail-value {
   font-size: 1.25rem;
   font-weight: 700;
-  color: var(--accent);
+  color: #ff6e00;
+  text-shadow: 0 0 5px rgba(255, 110, 0, 0.4);
 }
 
 .nest-preview {
   width: 100%;
   border-radius: 8px;
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
+  border: 2px solid rgba(255, 110, 0, 0.3);
+  box-shadow: 0 0 20px rgba(139, 0, 255, 0.3);
 }
 
 .detail-actions {
@@ -1008,15 +1029,17 @@ main.app-main {
 }
 
 .btn-friend {
-  background: var(--bg-main);
-  color: var(--primary);
-  border: 1px solid var(--border);
+  background: rgba(26, 11, 46, 0.8);
+  color: #b19cd9;
+  border: 1px solid rgba(139, 0, 255, 0.4);
+  box-shadow: 0 0 10px rgba(139, 0, 255, 0.2);
 }
 
 .btn-friend:hover {
-  background: #4299e1;
+  background: linear-gradient(135deg, #8b00ff, #9f1fff);
   color: white;
-  border-color: #4299e1;
+  border-color: rgba(139, 0, 255, 0.6);
+  box-shadow: 0 0 20px rgba(139, 0, 255, 0.4);
 }
 
 /* Slide Transition */

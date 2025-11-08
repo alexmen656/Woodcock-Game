@@ -47,7 +47,6 @@
         </button>
       </div>
     </div>
-
     <div class="canvas-wrapper">
       <canvas ref="canvasRef" :width="canvasWidth" :height="canvasHeight" @mousemove="handleMouseMove"
         @click="handleCanvasClick"></canvas>
@@ -92,12 +91,12 @@
         </div>
       </div>
       <div v-if="gameOver" class="game-over">
-        <h2 v-if="isDead">🔪 GAME OVER! 💀</h2>
-        <h2 v-else>🎃 Round Over! 👻</h2>
+        <h2 v-if="isDead">GAME OVER!</h2>
+        <h2 v-else>Round Over!</h2>
         <p v-if="isDead" class="death-message">You got stabbed by a flying knife! 🩸</p>
         <p class="final-score">Collected: {{ score }} Points</p>
         <p class="total-points">Total: {{ totalPoints }} Points</p>
-        <p v-if="isNewHighscore" class="new-highscore">💀 New Highscore! 💀</p>
+        <p v-if="isNewHighscore" class="new-highscore">New Highscore!</p>
         <p class="hint">🦇 Go back to the nest to buy upgrades! 🕸️</p>
       </div>
     </div>

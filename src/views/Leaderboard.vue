@@ -1,8 +1,8 @@
 <template>
   <div class="leaderboard-view halloween-theme">
     <div class="leaderboard-header">
-      <h1>👻 Leaderboard 🎃</h1>
-      <p class="subtitle">🦇 The most haunted Nest-Builders in the graveyard 🦇</p>
+      <h1>Leaderboard</h1>
+      <p class="subtitle">The most haunted Nest-Builders in the graveyard</p>
     </div>
     <div v-if="loading" class="loading">
       <div class="spinner halloween-spinner"></div>
