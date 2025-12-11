@@ -752,9 +752,6 @@ main.app-main {
   background: linear-gradient(135deg, rgba(26, 11, 46, 0.95), rgba(45, 27, 78, 0.95));
   padding: 0.375rem 1rem;
   border-radius: var(--radius);
-  box-shadow: 
-    0 8px 32px rgba(138, 43, 226, 0.4),
-    0 0 40px rgba(255, 110, 0, 0.3);
   border: 2px solid rgba(255, 110, 0, 0.5);
   backdrop-filter: blur(10px);
 }
@@ -765,9 +762,6 @@ main.app-main {
   margin: 0;
   font-weight: 700;
   text-align: center;
-  text-shadow: 
-    0 0 10px rgba(255, 110, 0, 0.6),
-    0 0 20px rgba(255, 110, 0, 0.4);
 }
 
 .map-legend-floating {
@@ -796,7 +790,7 @@ main.app-main {
   gap: 0.5rem;
   font-size: 0.875rem;
   color: #b19cd9;
-  text-shadow: 0 0 5px rgba(177, 156, 217, 0.3);
+  
 }
 
 .legend-marker {
@@ -853,7 +847,7 @@ main.app-main {
 .tooltip-name {
   font-weight: 600;
   color: #ff6e00;
-  text-shadow: 0 0 5px rgba(255, 110, 0, 0.4);
+  
 }
 
 .tooltip-stats {
@@ -872,7 +866,7 @@ main.app-main {
 .tooltip-stat strong {
   color: #ff6e00;
   font-weight: 600;
-  text-shadow: 0 0 3px rgba(255, 110, 0, 0.3);
+  
 }
 
 .nest-detail-panel {
@@ -947,7 +941,7 @@ main.app-main {
   color: #ff6e00;
   margin: 0;
   font-weight: 700;
-  text-shadow: 0 0 10px rgba(255, 110, 0, 0.5);
+  
 }
 
 .detail-rank {
@@ -984,14 +978,14 @@ main.app-main {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-weight: 600;
-  text-shadow: 0 0 3px rgba(177, 156, 217, 0.3);
+  
 }
 
 .detail-value {
   font-size: 1.25rem;
   font-weight: 700;
   color: #ff6e00;
-  text-shadow: 0 0 5px rgba(255, 110, 0, 0.4);
+  
 }
 
 .nest-preview {

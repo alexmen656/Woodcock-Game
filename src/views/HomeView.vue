@@ -604,27 +604,6 @@ function goToMap() {
     margin-bottom: 1.75rem;
     font-weight: 700;
     letter-spacing: -0.02em;
-    text-shadow: 
-        0 0 10px #ff6e00,
-        0 0 20px #ff6e00,
-        0 0 30px #ff4500;
-    animation: spookyGlow 3s ease-in-out infinite;
-}
-
-@keyframes spookyGlow {
-    0%, 100% {
-        text-shadow: 
-            0 0 10px #ff6e00,
-            0 0 20px #ff6e00,
-            0 0 30px #ff4500;
-    }
-    50% {
-        text-shadow: 
-            0 0 20px #ff6e00,
-            0 0 30px #ff6e00,
-            0 0 40px #ff4500,
-            0 0 50px #ff4500;
-    }
 }
 
 .nest-canvas {
@@ -695,7 +674,6 @@ function goToMap() {
 
 .stat-icon {
     font-size: 2.5rem;
-    filter: drop-shadow(0 0 10px rgba(255, 110, 0, 0.6));
 }
 
 .stat-info {
@@ -710,7 +688,6 @@ function goToMap() {
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    text-shadow: 0 0 5px rgba(138, 43, 226, 0.5);
 }
 
 .stat-value {
@@ -718,7 +695,6 @@ function goToMap() {
     font-weight: 700;
     color: #ff6e00;
     line-height: 1;
-    text-shadow: 0 0 10px rgba(255, 110, 0, 0.8);
 }
 
 .upgrades-section {
@@ -733,7 +709,6 @@ function goToMap() {
     margin-bottom: 1.5rem;
     font-weight: 700;
     letter-spacing: -0.01em;
-    text-shadow: 0 0 10px rgba(255, 110, 0, 0.6);
     position: relative;
     display: inline-block;
 }
@@ -799,7 +774,6 @@ function goToMap() {
     color: #ff6e00;
     margin: 0;
     font-weight: 600;
-    text-shadow: 0 0 5px rgba(255, 110, 0, 0.5);
 }
 
 .upgrade-level {
@@ -811,7 +785,6 @@ function goToMap() {
     font-weight: 600;
     border: 1px solid rgba(139, 0, 255, 0.4);
     box-shadow: 0 0 10px rgba(139, 0, 255, 0.3);
-    text-shadow: 0 0 3px rgba(177, 156, 217, 0.4);
 }
 
 .upgrade-desc {
@@ -819,7 +792,6 @@ function goToMap() {
     font-size: 0.875rem;
     margin-bottom: 1.25rem;
     line-height: 1.5;
-    text-shadow: 0 0 3px rgba(177, 156, 217, 0.3);
 }
 
 .upgrade-footer {
@@ -833,16 +805,9 @@ function goToMap() {
     font-size: 1.125rem;
     font-weight: 700;
     color: #ff6e00;
-    text-shadow: 0 0 5px rgba(255, 110, 0, 0.5);
     display: flex;
     align-items: center;
     gap: 0.5rem;
-}
-
-.upgrade-cost::before {
-    content: '🎃';
-    font-size: 1.3rem;
-    animation: pumpkinSpin 4s ease-in-out infinite;
 }
 
 @keyframes pumpkinSpin {

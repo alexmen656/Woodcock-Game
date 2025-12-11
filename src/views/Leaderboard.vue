@@ -6,12 +6,12 @@
     </div>
     <div v-if="loading" class="loading">
       <div class="spinner halloween-spinner"></div>
-      <p>🕷️ Summoning the Leaderboard... 🕷️</p>
+      <p>Summoning the Leaderboard...</p>
     </div>
     <div v-else-if="error" class="error-message halloween-error">
       <span class="error-icon">💀</span>
       <p>{{ error }}</p>
-      <button @click="fetchLeaderboard" class="btn-retry">👻 Try Again</button>
+      <button @click="fetchLeaderboard" class="btn-retry">Try Again</button>
     </div>
     <div v-else class="leaderboard-container">
       <div class="stats-overview">
@@ -209,7 +209,6 @@ function formatNumber(num) {
 .leaderboard-header {
   text-align: center;
   margin-bottom: 2.5rem;
-  text-shadow: 0 0 20px rgba(255, 110, 0, 0.3);
 }
 
 .leaderboard-header h1 {
@@ -217,33 +216,11 @@ function formatNumber(num) {
   color: #ff6e00;
   margin-bottom: 0;
   font-weight: 700;
-  text-shadow: 
-    0 0 10px #ff6e00,
-    0 0 20px #ff6e00,
-    0 0 30px #ff4500;
-  animation: spookyGlow 3s ease-in-out infinite;
-}
-
-@keyframes spookyGlow {
-  0%, 100% {
-    text-shadow: 
-      0 0 10px #ff6e00,
-      0 0 20px #ff6e00,
-      0 0 30px #ff4500;
-  }
-  50% {
-    text-shadow: 
-      0 0 20px #ff6e00,
-      0 0 30px #ff6e00,
-      0 0 40px #ff4500,
-      0 0 50px #ff4500;
-  }
 }
 
 .subtitle {
   font-size: 1.125rem;
   color: #b19cd9;
-  text-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
 }
 
 .loading {
@@ -353,7 +330,6 @@ function formatNumber(num) {
   font-size: 2.5rem;
   font-weight: 700;
   color: #ff6e00;
-  text-shadow: 0 0 10px rgba(255, 110, 0, 0.8);
 }
 
 .stat-label {
@@ -479,7 +455,6 @@ function formatNumber(num) {
 
 .rank-badge .rank-number {
   color: #b19cd9;
-  text-shadow: 0 0 5px rgba(138, 43, 226, 0.5);
 }
 
 .player-info {
@@ -526,7 +501,6 @@ function formatNumber(num) {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  text-shadow: 0 0 10px rgba(255, 110, 0, 0.3);
 }
 
 .online-dot {
@@ -565,13 +539,11 @@ function formatNumber(num) {
   font-size: 0.9375rem;
   color: #b19cd9;
   font-weight: 600;
-  text-shadow: 0 0 5px rgba(138, 43, 226, 0.3);
   transition: all 0.3s ease;
 }
 
 .stat-item:hover {
   color: #ff6e00;
-  text-shadow: 0 0 10px rgba(255, 110, 0, 0.5);
   transform: scale(1.1);
 }
 
@@ -586,7 +558,6 @@ function formatNumber(num) {
   color: #ff6e00;
   line-height: 1;
   margin-bottom: 0.25rem;
-  text-shadow: 0 0 15px rgba(255, 110, 0, 0.6);
 }
 
 .points-label {
@@ -600,7 +571,6 @@ function formatNumber(num) {
   font-size: 0.75rem;
   color: #8b00ff;
   margin-top: 0.25rem;
-  text-shadow: 0 0 5px rgba(138, 43, 226, 0.5);
 }
 
 .pagination {
@@ -642,7 +612,6 @@ function formatNumber(num) {
 .page-info {
   font-weight: 600;
   color: #b19cd9;
-  text-shadow: 0 0 10px rgba(138, 43, 226, 0.3);
 }
 
 @media (max-width: 768px) {

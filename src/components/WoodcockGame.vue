@@ -54,13 +54,13 @@
         <div class="tutorial-content">
           <h2>Welcome to Nest Builder!</h2>
           <div class="tutorial-instructions">
-           <!--<div class="tutorial-item">
+            <!--<div class="tutorial-item">
               <svg class="tutorial-icon" viewBox="0 0 24 24" fill="currentColor">
                 <path
                   d="M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42C17.99 7.86 19 9.81 19 12c0 3.87-3.13 7-7 7s-7-3.13-7-7c0-2.19 1.01-4.14 2.58-5.42L6.17 5.17C4.23 6.82 3 9.26 3 12c0 4.97 4.03 9 9 9s9-4.03 9-9c0-2.74-1.23-5.18-3.17-6.83z" />
               </svg>
               <span>Move your mouse to control the bird</span>
-            </div>--> 
+            </div>-->
             <div class="tutorial-item">
               <svg class="tutorial-icon" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />
@@ -312,7 +312,7 @@ function spawnLeaf() {
   const baseSize = 30
   const sizeBonus = leafSizeLevel.value * 4
   const leafSize = baseSize + sizeBonus
-  
+
   const leaf = {
     x: Math.random() * (canvasWidth.value - 40) + 20,
     y: -30,
@@ -368,12 +368,12 @@ function updateKnives() {
 function checkKnifeCollisions() {
   for (let i = knives.value.length - 1; i >= 0; i--) {
     const knife = knives.value[i]
-    
+
     const knifeLeft = knife.x
     const knifeRight = knife.x + knife.width
     const knifeTop = knife.y
     const knifeBottom = knife.y + knife.height
-    
+
     const birdLeft = woodcock.value.x
     const birdRight = woodcock.value.x + woodcock.value.width
     const birdTop = woodcock.value.y
@@ -491,8 +491,8 @@ function draw() {
   for (let i = 0; i < 3; i++) {
     context.beginPath()
     context.arc(
-      (canvas.width / 4) * (i + 1), 
-      canvas.height - 50 + Math.sin(frameCount * 0.02 + i) * 20, 
+      (canvas.width / 4) * (i + 1),
+      canvas.height - 50 + Math.sin(frameCount * 0.02 + i) * 20,
       100, 0, Math.PI * 2
     )
     context.fill()
@@ -669,7 +669,7 @@ function drawBloodSplatter(context, splatter) {
     const angle = (i / 5) * Math.PI * 2 + splatter.rotation
     const distance = splatter.size * 1.2
     const dropSize = splatter.size * 0.3
-    
+
     context.fillStyle = '#8b0000'
     context.beginPath()
     context.arc(
@@ -688,19 +688,19 @@ function drawBloodSplatter(context, splatter) {
 function drawCollisionEffect(context, effect) {
   context.save()
   context.globalAlpha = effect.alpha
-  
+
   context.shadowColor = '#ff6e00'
   context.shadowBlur = 20
   context.fillStyle = '#ff6e00'
   context.font = `bold ${20 * effect.scale}px Arial`
   context.textAlign = 'center'
   context.fillText(`+${effect.points}`, effect.x, effect.y)
-  
+
   context.fillStyle = '#8b00ff'
   context.font = `${15 * effect.scale}px Arial`
   context.fillText('✨', effect.x - 20, effect.y - 10)
   context.fillText('✨', effect.x + 20, effect.y - 10)
-  
+
   context.restore()
 }
 
@@ -717,7 +717,7 @@ function drawPauseScreen() {
   context.font = '48px Arial'
   context.textAlign = 'center'
   context.fillText('👻 PAUSED 🎃', canvasWidth.value / 2, canvasHeight.value / 2)
-  
+
   context.shadowBlur = 0
 }
 
@@ -935,14 +935,12 @@ function playSound(type) {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  text-shadow: 0 0 5px rgba(138, 43, 226, 0.3);
 }
 
 .stat-item .value {
   font-size: 1.5rem;
   font-weight: 700;
   color: #ff6e00;
-  text-shadow: 0 0 10px rgba(255, 110, 0, 0.6);
 }
 
 .hearts {
@@ -959,12 +957,16 @@ function playSound(type) {
 }
 
 @keyframes heartBeat {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
   }
+
   25% {
     transform: scale(1.1);
   }
+
   50% {
     transform: scale(1);
   }
@@ -1064,7 +1066,7 @@ function playSound(type) {
 canvas {
   border: 3px solid #ff6e00;
   border-radius: 12px;
-  box-shadow: 
+  box-shadow:
     0 8px 32px rgba(138, 43, 226, 0.4),
     0 0 40px rgba(255, 110, 0, 0.3),
     inset 0 0 20px rgba(0, 0, 0, 0.2);
@@ -1103,11 +1105,6 @@ canvas {
   color: #ff6e00;
   margin-bottom: 2rem;
   font-weight: 700;
-  text-shadow: 
-    0 0 10px #ff6e00,
-    0 0 20px #ff6e00,
-    0 0 30px #ff4500;
-  animation: spookyGlow 3s ease-in-out infinite;
 }
 
 .tutorial-instructions {
@@ -1186,7 +1183,7 @@ canvas {
   background: rgba(26, 11, 46, 0.95);
   padding: 2.5rem 3rem;
   border-radius: 12px;
-  box-shadow: 
+  box-shadow:
     0 8px 32px rgba(138, 43, 226, 0.6),
     0 0 50px rgba(255, 110, 0, 0.4);
   border: 3px solid #ff6e00;
@@ -1200,9 +1197,6 @@ canvas {
   color: #ff6e00;
   margin-bottom: 1.25rem;
   font-weight: 700;
-  text-shadow: 
-    0 0 10px #ff6e00,
-    0 0 20px #ff6e00;
   animation: spookyGlow 3s ease-in-out infinite;
 }
 
@@ -1217,7 +1211,6 @@ canvas {
 .total-points {
   color: #ff6e00;
   font-size: 1.5rem;
-  text-shadow: 0 0 10px rgba(255, 110, 0, 0.5);
 }
 
 .death-message {
@@ -1225,7 +1218,6 @@ canvas {
   color: #ff0000;
   font-weight: 600;
   margin: 0.75rem 0;
-  text-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
   animation: pulse 1s infinite;
 }
 
@@ -1239,20 +1231,7 @@ canvas {
   font-size: 1.125rem;
   color: #ff6e00;
   font-weight: 700;
-  animation: pulse 1s infinite, spookyGlow 3s ease-in-out infinite;
   margin-top: 1rem;
-  text-shadow: 0 0 15px rgba(255, 110, 0, 0.8);
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-
-  50% {
-    transform: scale(1.05);
-  }
 }
 
 @media (max-width: 900px) {
