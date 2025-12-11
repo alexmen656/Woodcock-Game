@@ -169,6 +169,21 @@ const knifeSpawnInterval = 300
 
 const isDead = ref(false)
 
+const specialItems = ref([])
+let specialItemSpawnTimer = 0
+const specialItemSpawnInterval = 300//900
+
+const reverseWoodcock = ref({
+  active: false,
+  x: 0,
+  y: 0,
+  width: 60,
+  height: 50,
+  speed: 8,
+  wingAngle: 0,
+  timeLeft: 0
+})
+
 const keys = ref({
   left: false,
   right: false
@@ -230,6 +245,9 @@ function startGame() {
   frameCount = 0
   leafSpawnTimer = 0
   knifeSpawnTimer = 0
+  specialItems.value = []
+  specialItemSpawnTimer = 0
+  reverseWoodcock.value.active = false
 
   const baseSpeed = 8
   const speedBonus = speedLevel.value * 0.5
@@ -275,8 +293,16 @@ function update() {
     knifeSpawnTimer = 0
   }
 
+  specialItemSpawnTimer++
+  if (specialItemSpawnTimer >= specialItemSpawnInterval) {
+    spawnSpecialItem()
+    specialItemSpawnTimer = 0
+  }
+
   updateLeafs()
   updateKnives()
+  updateSpecialItems()
+  updateReverseWoodcock()
   checkCollisions()
   checkKnifeCollisions()
   updateCollisionEffects()
@@ -361,6 +387,99 @@ function updateKnives() {
       knives.value.splice(i, 1)
     }
   }
+}
+
+function spawnSpecialItem() {
+  const item = {
+    x: Math.random() * (canvasWidth.value - 40) + 20,
+    y: -30,
+    width: 40,
+    height: 40,
+    speed: 3,
+    type: 'mirror'
+  }
+  specialItems.value.push(item)
+}
+
+function updateSpecialItems() {
+  for (let i = specialItems.value.length - 1; i >= 0; i--) {
+    const item = specialItems.value[i]
+    item.y += item.speed
+
+    if (checkRectCollision(item, woodcock.value)) {
+      activateReverseWoodcock()
+      specialItems.value.splice(i, 1)
+      playSound('upgrade')
+      addCollisionEffect(item.x + item.width / 2, item.y + item.height / 2, "MIRROR!")
+    } else if (item.y > canvasHeight.value) {
+      specialItems.value.splice(i, 1)
+    }
+  }
+}
+
+function activateReverseWoodcock() {
+  const w = woodcock.value
+  reverseWoodcock.value = {
+    active: true,
+    x: canvasWidth.value - w.x - w.width,
+    y: w.y,
+    width: w.width,
+    height: w.height,
+    speed: w.speed,
+    wingAngle: 0,
+    timeLeft: 600
+  }
+}
+
+function updateReverseWoodcock() {
+  if (!reverseWoodcock.value.active) return
+
+  const rw = reverseWoodcock.value
+  rw.timeLeft--
+  if (rw.timeLeft <= 0) {
+    rw.active = false
+    return
+  }
+
+  if (keys.value.left) {
+    rw.x += rw.speed
+  } else if (keys.value.right) {
+    rw.x -= rw.speed
+  }
+
+  if (rw.x < 0) rw.x = 0
+  if (rw.x > canvasWidth.value - rw.width) {
+    rw.x = canvasWidth.value - rw.width
+  }
+
+  rw.wingAngle += 0.2
+
+  for (let i = leafs.value.length - 1; i >= 0; i--) {
+    const leaf = leafs.value[i]
+    if (checkRectCollision(leaf, rw)) {
+      score.value += 10
+      leafs.value.splice(i, 1)
+      addCollisionEffect(leaf.x + leaf.width / 2, leaf.y + leaf.height / 2, 10)
+      playSound('catch')
+    }
+  }
+
+  for (let i = knives.value.length - 1; i >= 0; i--) {
+    const knife = knives.value[i]
+    if (checkRectCollision(knife, rw)) {
+      rw.active = false
+      playSound('miss')
+    }
+  }
+}
+
+function checkRectCollision(rect1, rect2) {
+  return (
+    rect1.x < rect2.x + rect2.width &&
+    rect1.x + rect1.width > rect2.x &&
+    rect1.y < rect2.y + rect2.height &&
+    rect1.y + rect1.height > rect2.y
+  )
 }
 
 function checkKnifeCollisions() {
@@ -497,26 +616,36 @@ function draw() {
   }
 
   leafs.value.forEach(leaf => drawLeaf(context, leaf))
+  specialItems.value.forEach(item => drawSpecialItem(context, item))
   knives.value.forEach(knife => drawKnife(context, knife))
 
   drawWoodcock(context)
+  if (reverseWoodcock.value.active) {
+    drawWoodcock(context, reverseWoodcock.value, true)
+  }
 
   bloodSplatters.value.forEach(splatter => drawBloodSplatter(context, splatter))
   collisionEffects.value.forEach(effect => drawCollisionEffect(context, effect))
 }
 
-function drawWoodcock(context) {
-  const w = woodcock.value
+function drawWoodcock(context, bird = woodcock.value, isGhost = false) {
+  const w = bird
 
   context.save()
   context.translate(w.x + w.width / 2, w.y + w.height / 2)
+
+  if (isGhost) {
+    context.globalAlpha = 0.6
+    context.scale(-1, 1)
+    context.filter = 'hue-rotate(180deg)'
+  }
 
   context.fillStyle = '#8B6F47'
   context.beginPath()
   context.ellipse(0, 0, w.width / 2, w.height / 2, 0, 0, Math.PI * 2)
   context.fill()
 
-  const wingOffset = isDead.value ? 0 : Math.sin(w.wingAngle) * 10
+  const wingOffset = isDead.value && !isGhost ? 0 : Math.sin(w.wingAngle) * 10
 
   context.fillStyle = '#A0826D'
   context.beginPath()
@@ -540,7 +669,7 @@ function drawWoodcock(context) {
   context.closePath()
   context.fill()
 
-  if (isDead.value) {
+  if (isDead.value && !isGhost) {
     context.strokeStyle = 'black'
     context.lineWidth = 2
     context.beginPath()
@@ -563,6 +692,27 @@ function drawWoodcock(context) {
   context.lineTo(w.width / 2 + 15, 10)
   context.closePath()
   context.fill()
+
+  context.restore()
+}
+
+function drawSpecialItem(context, item) {
+  context.save()
+  context.translate(item.x + item.width / 2, item.y + item.height / 2)
+
+  context.shadowColor = '#00ffff'
+  context.shadowBlur = 15
+
+  context.fillStyle = '#00ffff'
+  context.beginPath()
+  context.arc(0, 0, item.width / 2, 0, Math.PI * 2)
+  context.fill()
+
+  context.fillStyle = '#ffffff'
+  context.font = '20px Arial'
+  context.textAlign = 'center'
+  context.textBaseline = 'middle'
+  context.fillText('⇄', 0, 0)
 
   context.restore()
 }
@@ -692,7 +842,9 @@ function drawCollisionEffect(context, effect) {
   context.fillStyle = '#ff6e00'
   context.font = `bold ${20 * effect.scale}px Arial`
   context.textAlign = 'center'
-  context.fillText(`+${effect.points}`, effect.x, effect.y)
+
+  const text = typeof effect.points === 'number' ? `+${effect.points}` : effect.points
+  context.fillText(text, effect.x, effect.y)
 
   context.fillStyle = '#8b00ff'
   context.font = `${15 * effect.scale}px Arial`
@@ -1035,7 +1187,7 @@ function playSound(type) {
 }
 
 canvas {
- /* border: 3px solid #ff6e00; */
+  /* border: 3px solid #ff6e00; */
   border-radius: 12px;
   background: linear-gradient(180deg, #2d1b4e 0%, #1a0b2e 100%);
   cursor: crosshair;
