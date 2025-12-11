@@ -3,7 +3,7 @@
     <header class="app-header">
       <div class="header-content">
         <div @click='router.push("/")' class="logo">
-          <img class="logo-img" src="./assets/logo.png" alt="Nest Builder Logo">
+          <img class="logo-img" src="./assets/new_logo.png" alt="Nest Builder Logo">
           <h1>Nest Builder</h1>
         </div>
         <nav class="nav">
