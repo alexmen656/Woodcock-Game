@@ -68,7 +68,8 @@
                         <div class="upgrade-footer">
                             <span class="upgrade-cost">{{ decorationUpgradeCost }} Points</span>
                             <button @click="upgradeDecoration"
-                                :disabled="totalPoints < decorationUpgradeCost || decorations >= 15" class="btn-upgrade">
+                                :disabled="totalPoints < decorationUpgradeCost || decorations >= 15"
+                                class="btn-upgrade">
                                 {{ decorations >= 15 ? 'Max Decorations' : 'Add' }}
                             </button>
                         </div>
@@ -86,8 +87,8 @@
                         <p class="upgrade-desc">Increase your movement speed in the game</p>
                         <div class="upgrade-footer">
                             <span class="upgrade-cost">{{ speedUpgradeCost }} Points</span>
-                            <button @click="upgradeSpeed"
-                                :disabled="totalPoints < speedUpgradeCost || speedLevel >= 10" class="btn-upgrade">
+                            <button @click="upgradeSpeed" :disabled="totalPoints < speedUpgradeCost || speedLevel >= 10"
+                                class="btn-upgrade">
                                 {{ speedLevel >= 10 ? 'Max Speed' : 'Upgrade' }}
                             </button>
                         </div>
@@ -100,8 +101,8 @@
                         <p class="upgrade-desc">Make your bird bigger to catch more leaves</p>
                         <div class="upgrade-footer">
                             <span class="upgrade-cost">{{ sizeUpgradeCost }} Points</span>
-                            <button @click="upgradeSize"
-                                :disabled="totalPoints < sizeUpgradeCost || sizeLevel >= 10" class="btn-upgrade">
+                            <button @click="upgradeSize" :disabled="totalPoints < sizeUpgradeCost || sizeLevel >= 10"
+                                class="btn-upgrade">
                                 {{ sizeLevel >= 10 ? 'Max Size' : 'Upgrade' }}
                             </button>
                         </div>
@@ -115,7 +116,8 @@
                         <div class="upgrade-footer">
                             <span class="upgrade-cost">{{ leafSizeUpgradeCost }} Points</span>
                             <button @click="upgradeLeafSize"
-                                :disabled="totalPoints < leafSizeUpgradeCost || leafSizeLevel >= 10" class="btn-upgrade">
+                                :disabled="totalPoints < leafSizeUpgradeCost || leafSizeLevel >= 10"
+                                class="btn-upgrade">
                                 {{ leafSizeLevel >= 10 ? 'Max Size' : 'Upgrade' }}
                             </button>
                         </div>
@@ -401,11 +403,54 @@ function drawWoodcock(ctx, x, y) {
     ctx.closePath()
     ctx.fill()
 
+
+    ctx.fillStyle = '#CD853F'
+    ctx.beginPath()
+    ctx.moveTo(x - 37, y - 10)
+    ctx.lineTo(x - 35, y - 12)
+    ctx.lineTo(x - 35, y - 8)
+    ctx.closePath()
+    ctx.fill()
+
+
     ctx.fillStyle = 'black'
     ctx.beginPath()
     ctx.arc(x - 12, y - 13, 2, 0, Math.PI * 2)
     ctx.fill()
+    ctx.restore()
 
+
+    /*
+    second eye ooks horrible 
+    ctx.fillStyle = 'black'
+     ctx.beginPath()
+     ctx.arc(x - 17, y - 13, 2, 0, Math.PI * 2)
+     ctx.fill()
+     ctx.restore()*/
+
+    /*ctx.fillStyle = 'black'
+    ctx.beginPath()
+    //ctx.arc(x - 2, y + 20, 2, 0, Math.PI * 2)
+    ctx.lineTo(x - 2, y + 20)
+    ctx.lineTo(x - 4, y + 30)
+    ctx.lineTo(x - 2, y + 40)
+    ctx.lineTo(x - 4, y + 40)
+    ctx.closePath()
+    ctx.fill()
+    //ctx.restore()*/
+
+
+    ctx.fillStyle = 'orange'
+    ctx.fillRect(x - 10, y + 16, 1.5, 8)
+
+    ctx.fillStyle = 'orange'
+    ctx.fillRect(x - 3, y + 16, 1.5, 8)
+
+    ctx.fillStyle = 'orange'
+    ctx.fillRect(x - 12.5, y + 23, 4, 1.5)
+
+    ctx.fillStyle = 'orange'
+    ctx.fillRect(x - 5.5, y + 23, 4, 1.5)
     ctx.restore()
 }
 
@@ -415,12 +460,12 @@ function upgradeNest() {
         nestLevel: nestLevel.value,
         cost: nestUpgradeCost.value
     })
-    
+
     if (totalPoints.value >= nestUpgradeCost.value && nestLevel.value < 15) {
         gameStore.spendPoints(nestUpgradeCost.value)
         gameStore.upgradeNest()
         playUpgradeSound()
-        
+
         console.log('Upgrade Nest - After:', {
             totalPoints: totalPoints.value,
             nestLevel: nestLevel.value
@@ -434,12 +479,12 @@ function upgradeEgg() {
         eggs: eggs.value,
         cost: eggUpgradeCost.value
     })
-    
+
     if (totalPoints.value >= eggUpgradeCost.value && eggs.value < 10) {
         gameStore.spendPoints(eggUpgradeCost.value)
         gameStore.addEgg()
         playUpgradeSound()
-        
+
         console.log('Upgrade Egg - After:', {
             totalPoints: totalPoints.value,
             eggs: eggs.value
@@ -453,12 +498,12 @@ function upgradeDecoration() {
         decorations: decorations.value,
         cost: decorationUpgradeCost.value
     })
-    
+
     if (totalPoints.value >= decorationUpgradeCost.value && decorations.value < 15) {
         gameStore.spendPoints(decorationUpgradeCost.value)
         gameStore.addDecoration()
         playUpgradeSound()
-        
+
         console.log('Upgrade Decoration - After:', {
             totalPoints: totalPoints.value,
             decorations: decorations.value
@@ -472,12 +517,12 @@ function upgradeSpeed() {
         speedLevel: speedLevel.value,
         cost: speedUpgradeCost.value
     })
-    
+
     if (totalPoints.value >= speedUpgradeCost.value && speedLevel.value < 10) {
         gameStore.spendPoints(speedUpgradeCost.value)
         gameStore.upgradeSpeed()
         playUpgradeSound()
-        
+
         console.log('Upgrade Speed - After:', {
             totalPoints: totalPoints.value,
             speedLevel: speedLevel.value
@@ -491,12 +536,12 @@ function upgradeSize() {
         sizeLevel: sizeLevel.value,
         cost: sizeUpgradeCost.value
     })
-    
+
     if (totalPoints.value >= sizeUpgradeCost.value && sizeLevel.value < 10) {
         gameStore.spendPoints(sizeUpgradeCost.value)
         gameStore.upgradeSize()
         playUpgradeSound()
-        
+
         console.log('Upgrade Size - After:', {
             totalPoints: totalPoints.value,
             sizeLevel: sizeLevel.value
@@ -510,12 +555,12 @@ function upgradeLeafSize() {
         leafSizeLevel: leafSizeLevel.value,
         cost: leafSizeUpgradeCost.value
     })
-    
+
     if (totalPoints.value >= leafSizeUpgradeCost.value && leafSizeLevel.value < 10) {
         gameStore.spendPoints(leafSizeUpgradeCost.value)
         gameStore.upgradeLeafSize()
         playUpgradeSound()
-        
+
         console.log('Upgrade Leaf Size - After:', {
             totalPoints: totalPoints.value,
             leafSizeLevel: leafSizeLevel.value
@@ -565,7 +610,7 @@ function goToMap() {
     background: linear-gradient(135deg, rgba(26, 11, 46, 0.95), rgba(45, 27, 78, 0.95));
     border-radius: var(--radius);
     padding: 2.5rem;
-    box-shadow: 
+    box-shadow:
         0 8px 32px rgba(138, 43, 226, 0.4),
         0 0 40px rgba(255, 110, 0, 0.3),
         inset 0 0 20px rgba(0, 0, 0, 0.2);
@@ -587,10 +632,13 @@ function goToMap() {
 }
 
 @keyframes spookyPulse {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: scale(1);
         opacity: 0.3;
     }
+
     50% {
         transform: scale(1.1);
         opacity: 0.5;
@@ -609,7 +657,7 @@ function goToMap() {
 .nest-canvas {
     border: 2px solid #ff6e00;
     border-radius: var(--radius);
-    box-shadow: 
+    box-shadow:
         0 8px 32px rgba(138, 43, 226, 0.4),
         0 0 40px rgba(255, 110, 0, 0.3);
     background: linear-gradient(180deg, #2d1b4e 0%, #1a0b2e 100%);
@@ -661,7 +709,7 @@ function goToMap() {
 }
 
 .stat-card:hover {
-    box-shadow: 
+    box-shadow:
         0 8px 32px rgba(138, 43, 226, 0.6),
         0 0 40px rgba(255, 110, 0, 0.4);
     transform: translateY(-2px);
@@ -728,7 +776,7 @@ function goToMap() {
     position: relative;
     overflow: hidden;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2),
-                0 0 20px rgba(139, 0, 255, 0.3);
+        0 0 20px rgba(139, 0, 255, 0.3);
 }
 
 .upgrade-card::before {
@@ -751,8 +799,8 @@ function goToMap() {
 .upgrade-card:hover:not(.locked) {
     transform: translateY(-2px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3),
-                0 0 30px rgba(139, 0, 255, 0.5),
-                0 0 15px rgba(255, 110, 0, 0.4);
+        0 0 30px rgba(139, 0, 255, 0.5),
+        0 0 15px rgba(255, 110, 0, 0.4);
     border-color: rgba(255, 110, 0, 0.6);
 }
 
@@ -811,12 +859,16 @@ function goToMap() {
 }
 
 @keyframes pumpkinSpin {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: rotate(0deg);
     }
+
     25% {
         transform: rotate(-10deg);
     }
+
     75% {
         transform: rotate(10deg);
     }
@@ -869,52 +921,52 @@ function goToMap() {
 }
 
 .action-buttons {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  flex-wrap: wrap;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 .btn-play,
 .btn-map {
-  font-size: 1.125rem;
-  font-weight: 600;
-  padding: 1rem 2rem;
-  border: none;
-  border-radius: var(--radius);
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 0 20px rgba(255, 110, 0, 0.3);
-  position: relative;
-  overflow: hidden;
+    font-size: 1.125rem;
+    font-weight: 600;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(255, 110, 0, 0.3);
+    position: relative;
+    overflow: hidden;
 }
 
 .btn-play {
-  background: linear-gradient(135deg, #ff6e00, #ff8c33);
-  color: white;
-  flex: 1;
-  min-width: 250px;
-  border: 2px solid rgba(255, 110, 0, 0.5);
+    background: linear-gradient(135deg, #ff6e00, #ff8c33);
+    color: white;
+    flex: 1;
+    min-width: 250px;
+    border: 2px solid rgba(255, 110, 0, 0.5);
 }
 
 .btn-play:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 30px rgba(255, 110, 0, 0.6), 0 0 20px rgba(139, 0, 255, 0.4);
-  background: linear-gradient(135deg, #ff8c33, #ff6e00);
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px rgba(255, 110, 0, 0.6), 0 0 20px rgba(139, 0, 255, 0.4);
+    background: linear-gradient(135deg, #ff8c33, #ff6e00);
 }
 
 .btn-map {
-  background: linear-gradient(135deg, #8b00ff, #9f1fff);
-  color: white;
-  flex: 1;
-  min-width: 250px;
-  border: 2px solid rgba(139, 0, 255, 0.5);
+    background: linear-gradient(135deg, #8b00ff, #9f1fff);
+    color: white;
+    flex: 1;
+    min-width: 250px;
+    border: 2px solid rgba(139, 0, 255, 0.5);
 }
 
 .btn-map:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 30px rgba(139, 0, 255, 0.6), 0 0 20px rgba(255, 110, 0, 0.4);
-  background: linear-gradient(135deg, #9f1fff, #8b00ff);
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px rgba(139, 0, 255, 0.6), 0 0 20px rgba(255, 110, 0, 0.4);
+    background: linear-gradient(135deg, #9f1fff, #8b00ff);
 }
 
 @media (max-width: 768px) {
@@ -951,7 +1003,7 @@ function goToMap() {
         font-size: 1.125rem;
         padding: 0.875rem 2rem;
     }
-    
+
     .stat-card {
         padding: 1rem;
     }
