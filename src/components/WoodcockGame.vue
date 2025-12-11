@@ -72,14 +72,14 @@
                 <path
                   d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
               </svg>
-              <span>🍂 Collect leaves to earn points</span>
+              <span>Collect leaves to earn points</span>
             </div>
             <div class="tutorial-item">
               <svg class="tutorial-icon" viewBox="0 0 24 24" fill="currentColor">
                 <path
                   d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
               </svg>
-              <span>💀 Don't lose all your hearts!</span>
+              <span>Don't lose all your hearts!</span>
             </div>
           </div>
           <button class="tutorial-btn">
@@ -93,11 +93,11 @@
       <div v-if="gameOver" class="game-over">
         <h2 v-if="isDead">GAME OVER!</h2>
         <h2 v-else>Round Over!</h2>
-        <p v-if="isDead" class="death-message">You got stabbed by a flying knife! 🩸</p>
+        <p v-if="isDead" class="death-message">You got stabbed by a flying knife!</p>
         <p class="final-score">Collected: {{ score }} Points</p>
         <p class="total-points">Total: {{ totalPoints }} Points</p>
         <p v-if="isNewHighscore" class="new-highscore">New Highscore!</p>
-        <p class="hint">🦇 Go back to the nest to buy upgrades! 🕸️</p>
+        <p class="hint">Go back to the nest to buy upgrades!</p>
       </div>
     </div>
   </div>
@@ -178,7 +178,6 @@ let animationFrameId = null
 let frameCount = 0
 
 const collisionEffects = ref([])
-
 const bloodSplatters = ref([])
 
 onMounted(() => {
@@ -211,7 +210,6 @@ function handleResize() {
   const maxHeight = Math.min(600, window.innerHeight - 300)
   canvasWidth.value = maxWidth
   canvasHeight.value = maxHeight
-
   woodcock.value.y = maxHeight - 100
   woodcock.value.x = Math.min(woodcock.value.x, maxWidth - woodcock.value.width)
 }
@@ -896,7 +894,7 @@ function playSound(type) {
   max-height: calc(100vh - 120px);
   overflow: hidden;
   box-sizing: border-box;
-  background: linear-gradient(180deg, #1a0b2e 0%, #16213e 100%);
+  background: transparent;
   padding: 1rem;
   border-radius: 12px;
 }
@@ -909,8 +907,7 @@ function playSound(type) {
   padding: 1rem 1.5rem;
   background: rgba(30, 10, 40, 0.7);
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(138, 43, 226, 0.4);
-  border: 2px solid rgba(255, 110, 0, 0.5);
+  /*border: 2px solid rgba(255, 110, 0, 0.5);*/
   flex-wrap: wrap;
   gap: 1rem;
   backdrop-filter: blur(10px);
@@ -952,24 +949,6 @@ function playSound(type) {
   width: 24px;
   height: 24px;
   color: #ff0000;
-  filter: drop-shadow(0 0 8px rgba(255, 0, 0, 0.8)) drop-shadow(0 0 15px rgba(255, 0, 0, 0.5));
-  animation: heartBeat 1.5s ease-in-out infinite;
-}
-
-@keyframes heartBeat {
-
-  0%,
-  100% {
-    transform: scale(1);
-  }
-
-  25% {
-    transform: scale(1.1);
-  }
-
-  50% {
-    transform: scale(1);
-  }
 }
 
 .stat-item.lives .value {
@@ -1011,50 +990,42 @@ function playSound(type) {
 .btn-primary {
   background: linear-gradient(135deg, #ff6e00, #ff4500);
   color: white;
-  box-shadow: 0 4px 15px rgba(255, 110, 0, 0.4);
 }
 
 .btn-primary:hover {
   background: linear-gradient(135deg, #ff4500, #ff6e00);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255, 110, 0, 0.6);
 }
 
 .btn-secondary {
   background: linear-gradient(135deg, #8b00ff, #6a0dad);
   color: white;
-  box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
 }
 
 .btn-secondary:hover {
   background: linear-gradient(135deg, #6a0dad, #8b00ff);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(138, 43, 226, 0.6);
 }
 
 .btn-back {
   background: linear-gradient(135deg, #ff6e00, #ff4500);
   color: white;
-  box-shadow: 0 4px 15px rgba(255, 110, 0, 0.4);
 }
 
 .btn-back:hover {
   background: linear-gradient(135deg, #ff4500, #ff6e00);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255, 110, 0, 0.6);
 }
 
 .btn-sound {
   background: rgba(30, 10, 40, 0.6);
   padding: 0.75rem 1rem;
   border: 2px solid rgba(138, 43, 226, 0.5);
-  box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
 }
 
 .btn-sound:hover {
   background: rgba(255, 110, 0, 0.2);
   border-color: #ff6e00;
-  box-shadow: 0 6px 20px rgba(255, 110, 0, 0.5);
 }
 
 .canvas-wrapper {
@@ -1064,12 +1035,8 @@ function playSound(type) {
 }
 
 canvas {
-  border: 3px solid #ff6e00;
+ /* border: 3px solid #ff6e00; */
   border-radius: 12px;
-  box-shadow:
-    0 8px 32px rgba(138, 43, 226, 0.4),
-    0 0 40px rgba(255, 110, 0, 0.3),
-    inset 0 0 20px rgba(0, 0, 0, 0.2);
   background: linear-gradient(180deg, #2d1b4e 0%, #1a0b2e 100%);
   cursor: crosshair;
   display: block;
@@ -1091,7 +1058,6 @@ canvas {
   border-radius: 12px;
   cursor: pointer;
   z-index: 10;
-  box-shadow: inset 0 0 50px rgba(255, 110, 0, 0.2);
 }
 
 .tutorial-content {
@@ -1130,7 +1096,6 @@ canvas {
   background: rgba(255, 110, 0, 0.2);
   border-color: #ff6e00;
   transform: translateX(5px);
-  box-shadow: 0 4px 15px rgba(255, 110, 0, 0.3);
 }
 
 .tutorial-icon {
@@ -1161,13 +1126,11 @@ canvas {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  box-shadow: 0 8px 25px rgba(255, 110, 0, 0.5);
 }
 
 .tutorial-btn:hover {
   background: linear-gradient(135deg, #ff4500, #ff6e00);
   transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 12px 35px rgba(255, 110, 0, 0.7);
 }
 
 .arrow-icon {
@@ -1183,9 +1146,6 @@ canvas {
   background: rgba(26, 11, 46, 0.95);
   padding: 2.5rem 3rem;
   border-radius: 12px;
-  box-shadow:
-    0 8px 32px rgba(138, 43, 226, 0.6),
-    0 0 50px rgba(255, 110, 0, 0.4);
   border: 3px solid #ff6e00;
   text-align: center;
   z-index: 10;
